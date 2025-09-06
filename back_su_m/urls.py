@@ -28,3 +28,14 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+from rest_framework.routers import DefaultRouter
+from publications import views
+
+router = DefaultRouter()
+router.register(r'publications', views.PublicationViewSet)
+router.register(r'research-centers', views.ResearchCenterViewSet)
+
+urlpatterns = [
+    path('api/', include(router.urls)),
+]
