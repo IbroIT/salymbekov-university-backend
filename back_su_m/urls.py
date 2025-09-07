@@ -21,6 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('news.urls')),  # API endpoints
+    path('api/', include('publications.urls')),  # API endpoints
     path('api/', include('news.urls')),  # News API endpoints
     path('research/', include('research.urls')),  # Research API endpoints
 ]
@@ -29,3 +31,10 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+from rest_framework.routers import DefaultRouter
+from publications import views
+
+router = DefaultRouter()
+router.register(r'publications', views.PublicationViewSet)
+router.register(r'research-centers', views.ResearchCenterViewSet)
