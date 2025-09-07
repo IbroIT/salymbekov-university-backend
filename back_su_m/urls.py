@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('news.urls')),  # API endpoints
+    path('api/', include('publications.urls')),  # API endpoints
 ]
 
 # Serve media files during development
@@ -35,7 +36,3 @@ from publications import views
 router = DefaultRouter()
 router.register(r'publications', views.PublicationViewSet)
 router.register(r'research-centers', views.ResearchCenterViewSet)
-
-urlpatterns = [
-    path('api/', include(router.urls)),
-]
