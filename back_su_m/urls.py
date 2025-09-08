@@ -21,7 +21,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('news.urls')),  # API endpoints
+    path('api/', include('news.urls')),  # News API endpoints
+    path('research/', include('research.urls')),  # Research API endpoints
 ]
 
 # Serve media files during development
