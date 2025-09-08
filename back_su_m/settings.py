@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'news',
     'research',
     'careers',
+    'banner'
 ]
 
 MIDDLEWARE = [
