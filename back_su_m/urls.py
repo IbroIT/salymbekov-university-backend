@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('news.urls')),  # News API endpoints
     path('research/', include('research.urls')),  # Research API endpoints
+    path('api/careers/', include('careers.urls')),  # Careers API endpoints
 ]
 
 # Serve media files during development
