@@ -19,18 +19,34 @@ class CareerCategory(models.Model):
         unique=True,
         verbose_name=_('Категория')
     )
-    display_name = models.CharField(
+    display_name_ru = models.CharField(
         max_length=100,
-        verbose_name=_('Название для отображения')
+        verbose_name=_('Название для отображения (русский)')
+    )
+    display_name_kg = models.CharField(
+        max_length=100,
+        verbose_name=_('Название для отображения (кыргызский)')
+    )
+    display_name_en = models.CharField(
+        max_length=100,
+        verbose_name=_('Название для отображения (английский)')
     )
     icon = models.CharField(
         max_length=10,
         default='💼',
         verbose_name=_('Иконка')
     )
-    description = models.TextField(
+    description_ru = models.TextField(
         blank=True,
-        verbose_name=_('Описание категории')
+        verbose_name=_('Описание категории (русский)')
+    )
+    description_kg = models.TextField(
+        blank=True,
+        verbose_name=_('Описание категории (кыргызский)')
+    )
+    description_en = models.TextField(
+        blank=True,
+        verbose_name=_('Описание категории (английский)')
     )
     is_active = models.BooleanField(
         default=True,
@@ -44,31 +60,57 @@ class CareerCategory(models.Model):
     class Meta:
         verbose_name = _('Категория карьеры')
         verbose_name_plural = _('Категории карьеры')
-        ordering = ['order', 'display_name']
+        ordering = ['order', 'display_name_ru']
     
     def __str__(self):
-        return self.display_name
+        return self.display_name_ru
 
 
 class Department(models.Model):
     """Подразделения университета"""
-    name = models.CharField(
+    name_ru = models.CharField(
         max_length=200,
-        verbose_name=_('Название подразделения')
+        verbose_name=_('Название подразделения (русский)')
+    )
+    name_kg = models.CharField(
+        max_length=200,
+        verbose_name=_('Название подразделения (кыргызский)')
+    )
+    name_en = models.CharField(
+        max_length=200,
+        verbose_name=_('Название подразделения (английский)')
     )
     short_name = models.CharField(
         max_length=50,
         blank=True,
         verbose_name=_('Краткое название')
     )
-    description = models.TextField(
+    description_ru = models.TextField(
         blank=True,
-        verbose_name=_('Описание подразделения')
+        verbose_name=_('Описание подразделения (русский)')
     )
-    head_name = models.CharField(
+    description_kg = models.TextField(
+        blank=True,
+        verbose_name=_('Описание подразделения (кыргызский)')
+    )
+    description_en = models.TextField(
+        blank=True,
+        verbose_name=_('Описание подразделения (английский)')
+    )
+    head_name_ru = models.CharField(
         max_length=200,
         blank=True,
-        verbose_name=_('Руководитель')
+        verbose_name=_('Руководитель (русский)')
+    )
+    head_name_kg = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_('Руководитель (кыргызский)')
+    )
+    head_name_en = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_('Руководитель (английский)')
     )
     contact_email = models.EmailField(
         blank=True,
@@ -96,10 +138,10 @@ class Department(models.Model):
     class Meta:
         verbose_name = _('Подразделение')
         verbose_name_plural = _('Подразделения')
-        ordering = ['name']
+        ordering = ['name_ru']
     
     def __str__(self):
-        return self.name
+        return self.name_ru
 
 
 class Vacancy(models.Model):
@@ -119,9 +161,17 @@ class Vacancy(models.Model):
         ('archived', _('Архив')),
     ]
     
-    title = models.CharField(
+    title_ru = models.CharField(
         max_length=200,
-        verbose_name=_('Название вакансии')
+        verbose_name=_('Название вакансии (русский)')
+    )
+    title_kg = models.CharField(
+        max_length=200,
+        verbose_name=_('Название вакансии (кыргызский)')
+    )
+    title_en = models.CharField(
+        max_length=200,
+        verbose_name=_('Название вакансии (английский)')
     )
     slug = models.SlugField(
         max_length=250,
@@ -139,10 +189,20 @@ class Vacancy(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_('Подразделение')
     )
-    location = models.CharField(
+    location_ru = models.CharField(
         max_length=100,
         default='Бишкек',
-        verbose_name=_('Место работы')
+        verbose_name=_('Место работы (русский)')
+    )
+    location_kg = models.CharField(
+        max_length=100,
+        default='Бишкек',
+        verbose_name=_('Место работы (кыргызский)')
+    )
+    location_en = models.CharField(
+        max_length=100,
+        default='Bishkek',
+        verbose_name=_('Место работы (английский)')
     )
     employment_type = models.CharField(
         max_length=20,
@@ -160,36 +220,94 @@ class Vacancy(models.Model):
         blank=True,
         verbose_name=_('Зарплата до (сом)')
     )
-    experience_years = models.CharField(
+    experience_years_ru = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name=_('Опыт работы')
+        verbose_name=_('Опыт работы (русский)')
     )
-    education_level = models.CharField(
+    experience_years_kg = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_('Опыт работы (кыргызский)')
+    )
+    experience_years_en = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_('Опыт работы (английский)')
+    )
+    education_level_ru = models.CharField(
         max_length=200,
         blank=True,
-        verbose_name=_('Требования к образованию')
+        verbose_name=_('Требования к образованию (русский)')
+    )
+    education_level_kg = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_('Требования к образованию (кыргызский)')
+    )
+    education_level_en = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name=_('Требования к образованию (английский)')
     )
     
     # Основное содержание
-    short_description = models.TextField(
-        verbose_name=_('Краткое описание')
+    short_description_ru = models.TextField(
+        verbose_name=_('Краткое описание (русский)')
     )
-    description = models.TextField(
-        verbose_name=_('Полное описание')
+    short_description_kg = models.TextField(
+        verbose_name=_('Краткое описание (кыргызский)')
     )
-    responsibilities = models.TextField(
+    short_description_en = models.TextField(
+        verbose_name=_('Краткое описание (английский)')
+    )
+    description_ru = models.TextField(
+        verbose_name=_('Полное описание (русский)')
+    )
+    description_kg = models.TextField(
+        verbose_name=_('Полное описание (кыргызский)')
+    )
+    description_en = models.TextField(
+        verbose_name=_('Полное описание (английский)')
+    )
+    responsibilities_ru = models.TextField(
         help_text=_('Каждое обязательство с новой строки'),
-        verbose_name=_('Обязанности')
+        verbose_name=_('Обязанности (русский)')
     )
-    requirements = models.TextField(
+    responsibilities_kg = models.TextField(
+        help_text=_('Каждое обязательство с новой строки'),
+        verbose_name=_('Обязанности (кыргызский)')
+    )
+    responsibilities_en = models.TextField(
+        help_text=_('Каждое обязательство с новой строки'),
+        verbose_name=_('Обязанности (английский)')
+    )
+    requirements_ru = models.TextField(
         help_text=_('Каждое требование с новой строки'),
-        verbose_name=_('Требования')
+        verbose_name=_('Требования (русский)')
     )
-    conditions = models.TextField(
+    requirements_kg = models.TextField(
+        help_text=_('Каждое требование с новой строки'),
+        verbose_name=_('Требования (кыргызский)')
+    )
+    requirements_en = models.TextField(
+        help_text=_('Каждое требование с новой строки'),
+        verbose_name=_('Требования (английский)')
+    )
+    conditions_ru = models.TextField(
         blank=True,
         help_text=_('Каждое условие с новой строки'),
-        verbose_name=_('Условия работы')
+        verbose_name=_('Условия работы (русский)')
+    )
+    conditions_kg = models.TextField(
+        blank=True,
+        help_text=_('Каждое условие с новой строки'),
+        verbose_name=_('Условия работы (кыргызский)')
+    )
+    conditions_en = models.TextField(
+        blank=True,
+        help_text=_('Каждое условие с новой строки'),
+        verbose_name=_('Условия работы (английский)')
     )
     
     # Мета информация
@@ -262,7 +380,7 @@ class Vacancy(models.Model):
         ]
     
     def __str__(self):
-        return self.title
+        return self.title_ru
     
     def get_absolute_url(self):
         return reverse('careers:vacancy_detail', kwargs={'slug': self.slug})
@@ -273,18 +391,52 @@ class Vacancy(models.Model):
             return [tag.strip() for tag in self.tags.split(',')]
         return []
     
-    def get_responsibilities_list(self):
-        """Возвращает список обязанностей"""
-        return [resp.strip() for resp in self.responsibilities.split('\n') if resp.strip()]
+    def get_responsibilities_list(self, language='ru'):
+        """Возвращает список обязанностей для указанного языка"""
+        if language == 'ky':
+            language = 'kg'  # Преобразуем ky в kg
+        
+        field_name = f"responsibilities_{language}"
+        responsibilities_text = getattr(self, field_name, None)
+        
+        # Если для текущего языка нет данных, используем русский как fallback
+        if not responsibilities_text:
+            responsibilities_text = self.responsibilities_ru
+        
+        if responsibilities_text:
+            return [resp.strip() for resp in responsibilities_text.split('\n') if resp.strip()]
+        return []
     
-    def get_requirements_list(self):
-        """Возвращает список требований"""
-        return [req.strip() for req in self.requirements.split('\n') if req.strip()]
+    def get_requirements_list(self, language='ru'):
+        """Возвращает список требований для указанного языка"""
+        if language == 'ky':
+            language = 'kg'  # Преобразуем ky в kg
+        
+        field_name = f"requirements_{language}"
+        requirements_text = getattr(self, field_name, None)
+        
+        # Если для текущего языка нет данных, используем русский как fallback
+        if not requirements_text:
+            requirements_text = self.requirements_ru
+        
+        if requirements_text:
+            return [req.strip() for req in requirements_text.split('\n') if req.strip()]
+        return []
     
-    def get_conditions_list(self):
-        """Возвращает список условий работы"""
-        if self.conditions:
-            return [cond.strip() for cond in self.conditions.split('\n') if cond.strip()]
+    def get_conditions_list(self, language='ru'):
+        """Возвращает список условий работы для указанного языка"""
+        if language == 'ky':
+            language = 'kg'  # Преобразуем ky в kg
+        
+        field_name = f"conditions_{language}"
+        conditions_text = getattr(self, field_name, None)
+        
+        # Если для текущего языка нет данных, используем русский как fallback
+        if not conditions_text:
+            conditions_text = self.conditions_ru
+        
+        if conditions_text:
+            return [cond.strip() for cond in conditions_text.split('\n') if cond.strip()]
         return []
     
     def get_salary_display(self):
@@ -381,7 +533,7 @@ class VacancyApplication(models.Model):
         unique_together = ['vacancy', 'email']
     
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - {self.vacancy.title}"
+        return f"{self.first_name} {self.last_name} - {self.vacancy.title_ru}"
     
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
