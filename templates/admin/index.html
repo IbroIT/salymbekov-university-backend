@@ -1,44 +1,87 @@
 {% extends "admin/index.html" %}
 
+
+
 {% load static %}
 
+
+
 {% block extrahead %}
+
     {{ block.super }}
+
     <style>
+
         .dashboard-welcome {
+
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+
             color: white;
+
             padding: 30px;
+
             border-radius: 12px;
+
             margin-bottom: 30px;
+
             text-align: center;
+
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
         }
+
         
+
         .dashboard-welcome h1 {
+
             margin: 0 0 10px 0;
+
             font-size: 28px;
+
             font-weight: 700;
+
         }
+
         
+
         .dashboard-welcome p {
+
             margin: 0;
+
             font-size: 16px;
+
             opacity: 0.9;
+
         }
+
         
+
         /* Скрываем секцию Recent Actions */
+
         #recent-actions-module {
+
             display: none !important;
+
         }
+
     </style>
+
 {% endblock %}
 
+
+
 {% block content %}
+
     <div class="dashboard-welcome">
-        <h1>🎓 Административная панель</h1>
+
+        <h1> Административная панель </h1>
+
         <p>Университет Салымбекова - Управление контентом</p>
+
     </div>
+
     
+
     {{ block.super }}
+
 {% endblock %}

@@ -10,16 +10,17 @@ class ResearchAreaAdmin(BaseModelAdmin, TranslationAdminMixin):
         'title_ru', 'icon_preview', 'color_preview', 'statistics_preview', 'colored_status'
     ]
     list_filter = ['is_active', 'created_at', 'color']
-    search_fields = ['title_ru', 'title_en', 'title_ky']
+    search_fields = ['title_ru', 'title_en', 'title_kg']
     ordering = ['title_ru']
     list_per_page = 15
+    readonly_fields = ['icon_preview', 'color_preview', 'statistics_preview']
     
     fieldsets = (
         ('🎯 Основная информация', {
-            'fields': ('title_ru', 'title_en', 'title_ky', 'icon', 'color')
+            'fields': ('title_ru', 'title_en', 'title_kg', 'icon', 'color')
         }),
         ('📝 Описание', {
-            'fields': ('description_ru', 'description_en', 'description_ky'),
+            'fields': ('description_ru', 'description_en', 'description_kg'),
             'classes': ['collapse']
         }),
         ('📊 Статистика', {

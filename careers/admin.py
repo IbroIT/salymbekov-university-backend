@@ -13,9 +13,10 @@ class CareerCategoryAdmin(BaseModelAdmin, TranslationAdminMixin):
         'order', 'vacancies_count_display'
     ]
     list_filter = ['is_active', 'name']
-    search_fields = ['display_name_ru', 'display_name_ky', 'display_name_en', 'name']
+    search_fields = ['display_name_ru', 'display_name_kg', 'display_name_en', 'name']
     list_editable = ['order']
     ordering = ['order', 'display_name_ru']
+    readonly_fields = ['icon_preview', 'vacancies_count_display']
     
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
@@ -98,51 +99,52 @@ class VacancyApplicationInline(admin.TabularInline):
 class VacancyAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = [
         'title_ru', 'category', 'department', 'employment_type_display', 
-        'status_badge', 'is_featured', 'formatted_deadline', 'applications_count_display'
+        'status_badge', 'is_featured', 'deadline', 'applications_count_display'
     ]
     list_filter = [
         'status', 'category', 'department', 'employment_type',
         'is_featured', 'posted_date', 'deadline'
     ]
     search_fields = [
-        'title_ru', 'title_ky', 'title_en', 
-        'short_description_ru', 'short_description_ky', 'short_description_en', 
+        'title_ru', 'title_kg', 'title_en', 
+        'short_description_ru', 'short_description_kg', 'short_description_en', 
         'tags'
     ]
     list_editable = ['is_featured']
     prepopulated_fields = {'slug': ('title_ru',)}
     date_hierarchy = 'posted_date'
     list_per_page = 15
+    readonly_fields = ['posted_date', 'updated_at', 'views_count', 'applications_count']
     
     fieldsets = (
         ('📋 Основная информация', {
             'fields': (
-                'title_ru', 'title_ky', 'title_en',
+                'title_ru', 'title_kg', 'title_en',
                 'slug', 'category', 'department', 
                 ('status', 'is_featured')
             )
         }),
         ('💼 Детали работы', {
             'fields': (
-                ('location_ru', 'location_ky', 'location_en'), 
+                ('location_ru', 'location_kg', 'location_en'), 
                 'employment_type', 
                 ('salary_min', 'salary_max'),
-                ('experience_years_ru', 'experience_years_ky', 'experience_years_en'), 
-                ('education_level_ru', 'education_level_ky', 'education_level_en')
+                ('experience_years_ru', 'experience_years_kg', 'experience_years_en'), 
+                ('education_level_ru', 'education_level_kg', 'education_level_en')
             )
         }),
         ('📝 Описание', {
             'fields': (
-                ('short_description_ru', 'short_description_ky', 'short_description_en'), 
-                ('description_ru', 'description_ky', 'description_en')
+                ('short_description_ru', 'short_description_kg', 'short_description_en'), 
+                ('description_ru', 'description_kg', 'description_en')
             ),
             'classes': ['collapse']
         }),
         ('📋 Требования и условия', {
             'fields': (
-                ('responsibilities_ru', 'responsibilities_ky', 'responsibilities_en'), 
-                ('requirements_ru', 'requirements_ky', 'requirements_en'), 
-                ('conditions_ru', 'conditions_ky', 'conditions_en')
+                ('responsibilities_ru', 'responsibilities_kg', 'responsibilities_en'), 
+                ('requirements_ru', 'requirements_kg', 'requirements_en'), 
+                ('conditions_ru', 'conditions_kg', 'conditions_en')
             ),
             'classes': ['collapse']
         }),
@@ -265,7 +267,7 @@ class VacancyApplicationAdmin(admin.ModelAdmin):
     list_filter = ['status', 'submitted_at', 'vacancy__category', 'vacancy__department']
     search_fields = [
         'first_name', 'last_name', 'email', 'phone',
-        'vacancy__title', 'vacancy__department__name'
+        'vacancy__title_ru'
     ]
     list_editable = ['status']
     readonly_fields = ['submitted_at', 'vacancy', 'first_name', 'last_name', 'email', 'phone', 'resume']

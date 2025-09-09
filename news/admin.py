@@ -14,10 +14,10 @@ from .models import (
 class NewsCategoryAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = ['name_ru', 'slug']
     prepopulated_fields = {'slug': ('name_ru',)}
-    search_fields = ['name_ru', 'name_ky', 'name_en']
+    search_fields = ['name_ru', 'name_kg', 'name_en']
     
     def get_fields(self, request, obj=None):
-        fields = ['name_ru', 'name_ky', 'name_en', 'slug']
+        fields = ['name_ru', 'name_kg', 'name_en', 'slug']
         return fields
 
 
@@ -26,7 +26,8 @@ class NewsTagAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = ['name_ru', 'slug', 'color_preview']
     prepopulated_fields = {'slug': ('name_ru',)}
     list_filter = ['color']
-    search_fields = ['name_ru', 'name_ky', 'name_en']
+    search_fields = ['name_ru', 'name_kg', 'name_en']
+    readonly_fields = ['color_preview']
     
     def color_preview(self, obj):
         return format_html(
@@ -83,7 +84,7 @@ class AnnouncementInline(admin.StackedInline):
 @admin.register(News)
 class NewsAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = [
-        'title_ru', 'category', 'author_ru', 'formatted_published_at', 
+        'title_ru', 'category', 'author_ru', 'published_at', 
         'views_count', 'status_badges', 'news_image_preview'
     ]
     list_filter = [
@@ -91,26 +92,27 @@ class NewsAdmin(BaseModelAdmin, TranslationAdminMixin):
         'created_at', 'published_at'
     ]
     search_fields = [
-        'title_ru', 'title_ky', 'title_en', 
-        'summary_ru', 'summary_ky', 'summary_en', 
-        'content_ru', 'content_ky', 'content_en', 
-        'author_ru', 'author_ky', 'author_en'
+        'title_ru', 'title_kg', 'title_en', 
+        'summary_ru', 'summary_kg', 'summary_en', 
+        'content_ru', 'content_kg', 'content_en', 
+        'author_ru', 'author_kg', 'author_en'
     ]
     prepopulated_fields = {'slug': ('title_ru',)}
     date_hierarchy = 'published_at'
     list_per_page = 20
+    readonly_fields = ['created_at', 'updated_at', 'news_image_preview']
     
     fieldsets = (
         ('📝 Основная информация', {
             'fields': (
-                'title_ru', 'title_ky', 'title_en',
+                'title_ru', 'title_kg', 'title_en',
                 'slug',
-                'summary_ru', 'summary_ky', 'summary_en',
+                'summary_ru', 'summary_kg', 'summary_en',
             )
         }),
         ('📖 Содержание', {
             'fields': (
-                'content_ru', 'content_ky', 'content_en',
+                'content_ru', 'content_kg', 'content_en',
             ),
             'classes': ['collapse']
         }),
@@ -118,7 +120,7 @@ class NewsAdmin(BaseModelAdmin, TranslationAdminMixin):
             'fields': ('image', 'image_url', 'news_image_preview'),
         }),
         ('📂 Классификация', {
-            'fields': ('category', 'author_ru', 'author_ky', 'author_en')
+            'fields': ('category', 'author_ru', 'author_kg', 'author_en')
         }),
         ('🚀 Публикация', {
             'fields': (
@@ -254,8 +256,9 @@ class AnnouncementAdmin(admin.ModelAdmin):
         'target_students', 'target_staff', 'target_faculty',
         'news__published_at', 'deadline'
     ]
-    search_fields = ['news__title', 'news__summary', 'news__content']
+    search_fields = ['news__title_ru', 'news__summary_ru', 'news__content_ru']
     date_hierarchy = 'deadline'
+    readonly_fields = ['attachment_preview']
     
     fieldsets = (
         ('Связанная новость', {
@@ -315,7 +318,7 @@ class AnnouncementAdmin(admin.ModelAdmin):
 class NewsViewAdmin(admin.ModelAdmin):
     list_display = ['news', 'ip_address', 'viewed_at']
     list_filter = ['viewed_at']
-    search_fields = ['news__title', 'ip_address']
+    search_fields = ['news__title_ru', 'ip_address']
     readonly_fields = ['news', 'ip_address', 'user_agent', 'viewed_at']
     date_hierarchy = 'viewed_at'
     
@@ -324,9 +327,12 @@ class NewsViewAdmin(admin.ModelAdmin):
     
     def has_change_permission(self, request, obj=None):
         return False  # Запрещаем редактирование просмотров
+    
+    def has_delete_permission(self, request, obj=None):
+        return True  # Разрешаем удаление для очистки статистики
 
 
 # Настройки админ-панели
 admin.site.site_header = "Салымбековский Университет - Управление новостями"
 admin.site.site_title = "Новости СУ"
-admin.site.index_title = "Панель управления новостями"
+admin.site.index_title = ""
