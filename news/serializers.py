@@ -8,7 +8,12 @@ class LanguageAwareSerializer(serializers.ModelSerializer):
     
     def get_localized_field(self, instance, field_name):
         """Получить переведенное поле в зависимости от текущего языка"""
-        current_language = translation.get_language() or 'ru'
+        # Получаем язык из заголовка запроса или используем текущий язык Django
+        request = self.context.get('request')
+        if request:
+            current_language = request.headers.get('Accept-Language', 'ru')
+        else:
+            current_language = translation.get_language() or 'ru'
         
         # Попробуем получить поле для текущего языка
         localized_field = f"{field_name}_{current_language}"
@@ -25,7 +30,7 @@ class LanguageAwareSerializer(serializers.ModelSerializer):
                 return value
         
         # Если и русского нет, вернем базовое поле
-        return getattr(instance, field_name, '')
+        return getattr(instance, field_name, 'not given')
     
     def to_representation(self, instance):
         """Переопределяем представление для автоматической локализации"""
@@ -41,17 +46,16 @@ class LanguageAwareSerializer(serializers.ModelSerializer):
         return data
 
 
-class NewsCategorySerializer(LanguageAwareSerializer):
+class NewsCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsCategory
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'name_ru', 'name_kg', 'name_en', 'description_ru', 'description_kg', 'description_en']
 
 
-class NewsTagSerializer(LanguageAwareSerializer):
+class NewsTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewsTag
-        fields = ['id', 'name', 'slug', 'color']
-        translatable_fields = ['name']
+        fields = ['id', 'name_ru', 'name_kg', 'name_en', 'slug', 'color']
 
 
 class EventDetailSerializer(serializers.ModelSerializer):
@@ -63,7 +67,8 @@ class EventDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = [
-            'event_date', 'event_time', 'end_time', 'location',
+            'event_date', 'event_time', 'end_time', 
+            'location_ru', 'location_kg', 'location_en',
             'event_category', 'event_category_display',
             'status', 'status_display',
             'max_participants', 'current_participants', 'participants_info',
@@ -111,7 +116,7 @@ class AnnouncementDetailSerializer(serializers.ModelSerializer):
         return audiences
 
 
-class NewsListSerializer(LanguageAwareSerializer):
+class NewsListSerializer(serializers.ModelSerializer):
     """Сериализатор для списка новостей (краткая информация)"""
     category = NewsCategorySerializer(read_only=True)
     image_url = serializers.SerializerMethodField()
@@ -121,11 +126,12 @@ class NewsListSerializer(LanguageAwareSerializer):
     class Meta:
         model = News
         fields = [
-            'id', 'title', 'slug', 'summary', 'image_url',
-            'category', 'author', 'published_at', 'is_featured',
-            'is_pinned', 'views_count', 'tags', 'read_time'
+            'id', 'title_ru', 'title_kg', 'title_en', 'slug', 
+            'summary_ru', 'summary_kg', 'summary_en', 'image_url',
+            'category', 'author_ru', 'author_kg', 'author_en', 
+            'published_at', 'is_featured', 'is_pinned', 'views_count', 
+            'tags', 'read_time'
         ]
-        translatable_fields = ['title', 'summary']
     
     def get_image_url(self, obj):
         return obj.image_url_or_default
@@ -138,13 +144,14 @@ class NewsListSerializer(LanguageAwareSerializer):
     
     def get_read_time(self, obj):
         # Примерный расчет времени чтения (200 слов в минуту)
-        if obj.content:
-            word_count = len(obj.content.split())
+        content = obj.content_ru or obj.content_kg or obj.content_en or ''
+        if content:
+            word_count = len(content.split())
             return max(1, word_count // 200)
         return 1
 
 
-class NewsDetailSerializer(LanguageAwareSerializer):
+class NewsDetailSerializer(serializers.ModelSerializer):
     """Детализированный сериализатор для новости"""
     category = NewsCategorySerializer(read_only=True)
     image_url = serializers.SerializerMethodField()
@@ -157,12 +164,14 @@ class NewsDetailSerializer(LanguageAwareSerializer):
     class Meta:
         model = News
         fields = [
-            'id', 'title', 'slug', 'summary', 'content', 'image_url',
-            'category', 'author', 'created_at', 'updated_at', 'published_at',
+            'id', 'title_ru', 'title_kg', 'title_en', 'slug', 
+            'summary_ru', 'summary_kg', 'summary_en', 
+            'content_ru', 'content_kg', 'content_en', 'image_url',
+            'category', 'author_ru', 'author_kg', 'author_en', 
+            'created_at', 'updated_at', 'published_at',
             'is_featured', 'is_pinned', 'views_count', 'tags', 'read_time',
             'event_details', 'announcement_details', 'related_news'
         ]
-        translatable_fields = ['title', 'summary', 'content']
     
     def get_image_url(self, obj):
         return obj.image_url
@@ -175,8 +184,9 @@ class NewsDetailSerializer(LanguageAwareSerializer):
     
     def get_read_time(self, obj):
         # Расчет времени чтения
-        if obj.content:
-            word_count = len(obj.content.split())
+        content = obj.content_ru or obj.content_kg or obj.content_en or ''
+        if content:
+            word_count = len(content.split())
             return max(1, word_count // 200)
         return 1
     
@@ -196,8 +206,9 @@ class EventListSerializer(LanguageAwareSerializer):
     slug = serializers.CharField(source='news.slug', read_only=True)
     summary = serializers.SerializerMethodField()
     image_url = serializers.SerializerMethodField()
-    author = serializers.CharField(source='news.author', read_only=True)
+    author = serializers.SerializerMethodField()
     published_at = serializers.DateTimeField(source='news.published_at', read_only=True)
+    location = serializers.SerializerMethodField()
     
     event_category_display = serializers.CharField(source='get_event_category_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
@@ -219,8 +230,21 @@ class EventListSerializer(LanguageAwareSerializer):
     def get_summary(self, obj):
         return self.get_localized_field(obj.news, 'summary')
     
+    def get_author(self, obj):
+        return self.get_localized_field(obj.news, 'author')
+    
+    def get_location(self, obj):
+        """Получает локализованное поле места проведения события"""
+        language = self.context.get('request').headers.get('Accept-Language', 'ru')
+        if language == 'ky':
+            return obj.location_kg or obj.location_ru
+        elif language == 'en':
+            return obj.location_en or obj.location_ru
+        return obj.location_ru
+    
     def get_image_url(self, obj):
-        return obj.news.image_url
+        """Получает URL изображения события"""
+        return obj.news.image_url_or_default
     
     def get_participants_info(self, obj):
         if obj.max_participants:
@@ -234,7 +258,7 @@ class AnnouncementListSerializer(LanguageAwareSerializer):
     summary = serializers.SerializerMethodField()
     content = serializers.SerializerMethodField()
     slug = serializers.CharField(source='news.slug', read_only=True)
-    author = serializers.CharField(source='news.author', read_only=True)
+    author = serializers.CharField(source='news.author_ru', read_only=True)
     published_at = serializers.DateTimeField(source='news.published_at', read_only=True)
     is_pinned = serializers.BooleanField(source='news.is_pinned', read_only=True)
     

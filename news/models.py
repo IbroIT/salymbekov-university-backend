@@ -18,25 +18,48 @@ class NewsCategory(models.Model):
     name = models.CharField(max_length=100, choices=CATEGORY_CHOICES, unique=True, verbose_name='Название')
     slug = models.SlugField(max_length=100, unique=True, verbose_name='URL slug')
     
+    # Мультиязычные поля
+    name_ru = models.CharField(max_length=100, verbose_name='Название (русский)')
+    name_kg = models.CharField(max_length=100, verbose_name='Название (кыргызский)')
+    name_en = models.CharField(max_length=100, verbose_name='Название (английский)')
+    
+    description_ru = models.TextField(blank=True, verbose_name='Описание (русский)')
+    description_kg = models.TextField(blank=True, verbose_name='Описание (кыргызский)')
+    description_en = models.TextField(blank=True, verbose_name='Описание (английский)')
+    
     class Meta:
         verbose_name = 'Категория новостей'
         verbose_name_plural = 'Категории новостей'
     
     def __str__(self):
-        return self.get_name_display()
+        return self.name_ru or self.get_name_display()
 
 
 class News(models.Model):
     """Основная модель для новостей, событий и объявлений"""
-    title = models.CharField(max_length=200, verbose_name='Заголовок')
+    # Мультиязычные текстовые поля
+    title_ru = models.CharField(max_length=200, verbose_name='Заголовок (русский)')
+    title_kg = models.CharField(max_length=200, verbose_name='Заголовок (кыргызский)')
+    title_en = models.CharField(max_length=200, verbose_name='Заголовок (английский)')
+    
     slug = models.SlugField(max_length=200, unique=True, verbose_name='URL slug')
-    summary = models.TextField(max_length=500, verbose_name='Краткое описание')
-    content = models.TextField(verbose_name='Полное содержание')
+    
+    summary_ru = models.TextField(max_length=500, verbose_name='Краткое описание (русский)')
+    summary_kg = models.TextField(max_length=500, verbose_name='Краткое описание (кыргызский)')
+    summary_en = models.TextField(max_length=500, verbose_name='Краткое описание (английский)')
+    
+    content_ru = models.TextField(verbose_name='Полное содержание (русский)')
+    content_kg = models.TextField(verbose_name='Полное содержание (кыргызский)')
+    content_en = models.TextField(verbose_name='Полное содержание (английский)')
+    
     image = models.ImageField(upload_to='news/images/', blank=True, null=True, verbose_name='Изображение')
     image_url = models.URLField(blank=True, null=True, verbose_name='URL изображения')
     
     category = models.ForeignKey(NewsCategory, on_delete=models.CASCADE, verbose_name='Категория')
-    author = models.CharField(max_length=100, verbose_name='Автор', default='Администрация университета')
+    
+    author_ru = models.CharField(max_length=100, verbose_name='Автор (русский)', default='Администрация университета')
+    author_kg = models.CharField(max_length=100, verbose_name='Автор (кыргызский)', default='Университеттин администрациясы')
+    author_en = models.CharField(max_length=100, verbose_name='Автор (английский)', default='University Administration')
     
     # Основные временные поля
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
@@ -57,7 +80,7 @@ class News(models.Model):
         ordering = ['-published_at']
     
     def __str__(self):
-        return self.title
+        return self.title_ru
     
     @property
     def image_url_or_default(self):
@@ -94,7 +117,10 @@ class Event(models.Model):
     event_date = models.DateField(verbose_name='Дата события')
     event_time = models.TimeField(verbose_name='Время начала')
     end_time = models.TimeField(blank=True, null=True, verbose_name='Время окончания')
-    location = models.CharField(max_length=200, verbose_name='Место проведения')
+    
+    location_ru = models.CharField(max_length=200, verbose_name='Место проведения (русский)')
+    location_kg = models.CharField(max_length=200, verbose_name='Место проведения (кыргызский)')
+    location_en = models.CharField(max_length=200, verbose_name='Место проведения (английский)')
     
     event_category = models.CharField(max_length=50, choices=EVENT_CATEGORIES, verbose_name='Тип события')
     status = models.CharField(max_length=20, choices=EVENT_STATUS, default='upcoming', verbose_name='Статус')
@@ -113,7 +139,7 @@ class Event(models.Model):
         ordering = ['event_date', 'event_time']
     
     def __str__(self):
-        return f"{self.news.title} - {self.event_date}"
+        return f"{self.news.title_ru} - {self.event_date}"
 
 
 class Announcement(models.Model):
@@ -160,7 +186,7 @@ class Announcement(models.Model):
         ordering = ['-priority', '-deadline']
     
     def __str__(self):
-        return f"{self.news.title} ({self.get_priority_display()})"
+        return f"{self.news.title_ru} ({self.get_priority_display()})"
     
     def save(self, *args, **kwargs):
         # Автоматически определяем приближающийся дедлайн
@@ -188,7 +214,9 @@ class NewsView(models.Model):
 
 class NewsTag(models.Model):
     """Теги для новостей"""
-    name = models.CharField(max_length=50, unique=True, verbose_name='Название тега')
+    name_ru = models.CharField(max_length=50, verbose_name='Название тега (русский)')
+    name_kg = models.CharField(max_length=50, verbose_name='Название тега (кыргызский)')
+    name_en = models.CharField(max_length=50, verbose_name='Название тега (английский)')
     slug = models.SlugField(max_length=50, unique=True, verbose_name='URL slug')
     color = models.CharField(max_length=7, default='#3B82F6', verbose_name='Цвет (hex)')
     
@@ -197,7 +225,7 @@ class NewsTag(models.Model):
         verbose_name_plural = 'Теги'
     
     def __str__(self):
-        return self.name
+        return self.name_ru
 
 
 class NewsTagRelation(models.Model):

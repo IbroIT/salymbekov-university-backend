@@ -28,15 +28,15 @@ class ResearchAreaAdmin(admin.ModelAdmin):
 
 @admin.register(ResearchCenter)
 class ResearchCenterAdmin(admin.ModelAdmin):
-    list_display = ['name_ru', 'director', 'staff_count', 'established_year', 'is_active']
+    list_display = ['name_ru', 'director_ru', 'staff_count', 'established_year', 'is_active']
     list_filter = ['is_active', 'established_year']
-    search_fields = ['name_ru', 'name_en', 'name_kg', 'director']
+    search_fields = ['name_ru', 'name_en', 'name_kg', 'director_ru', 'director_en', 'director_kg']
     list_editable = ['staff_count', 'is_active']
     ordering = ['name_ru']
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('name_ru', 'name_en', 'name_kg', 'director', 'established_year', 'staff_count')
+            'fields': ('name_ru', 'name_en', 'name_kg', 'director_ru', 'director_en', 'director_kg', 'established_year', 'staff_count')
         }),
         ('Описание', {
             'fields': ('description_ru', 'description_en', 'description_kg')
@@ -58,16 +58,16 @@ class ResearchCenterAdmin(admin.ModelAdmin):
 
 @admin.register(Grant)
 class GrantAdmin(admin.ModelAdmin):
-    list_display = ['title_ru', 'organization', 'amount', 'deadline', 'category', 'status']
+    list_display = ['title_ru', 'organization_ru', 'amount', 'deadline', 'category', 'status']
     list_filter = ['category', 'status', 'is_active', 'created_at']
-    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization']
+    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization_ru', 'organization_en', 'organization_kg']
     list_editable = ['status']
     date_hierarchy = 'deadline'
     ordering = ['-created_at']
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title_ru', 'title_en', 'title_kg', 'organization', 'amount')
+            'fields': ('title_ru', 'title_en', 'title_kg', 'organization_ru', 'organization_en', 'organization_kg', 'amount')
         }),
         ('Сроки', {
             'fields': ('deadline', 'duration_ru', 'duration_en', 'duration_kg')
@@ -133,9 +133,9 @@ class ConferenceAdmin(admin.ModelAdmin):
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ['title_ru', 'authors', 'journal', 'publication_date', 'publication_type', 'impact_factor', 'citations_count', 'is_featured']
+    list_display = ['title_ru', 'authors_ru', 'journal', 'publication_date', 'publication_type', 'impact_factor', 'citations_count', 'is_featured']
     list_filter = ['publication_type', 'publication_date', 'is_featured', 'is_active', 'research_area']
-    search_fields = ['title_ru', 'title_en', 'title_kg', 'authors', 'journal']
+    search_fields = ['title_ru', 'title_en', 'title_kg', 'authors_ru', 'authors_en', 'authors_kg', 'journal']
     list_editable = ['is_featured', 'citations_count']
     date_hierarchy = 'publication_date'
     ordering = ['-publication_date']
@@ -143,7 +143,7 @@ class PublicationAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title_ru', 'title_en', 'title_kg', 'authors', 'publication_type')
+            'fields': ('title_ru', 'title_en', 'title_kg', 'authors_ru', 'authors_en', 'authors_kg', 'publication_type')
         }),
         ('Публикация', {
             'fields': ('journal', 'publication_date', 'doi', 'url')

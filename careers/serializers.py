@@ -1,10 +1,54 @@
 from rest_framework import serializers
-from django.utils.translation import get_language
+from django.utils import translation
 from .models import CareerCategory, Department, Vacancy, VacancyApplication
 
 
-class CareerCategorySerializer(serializers.ModelSerializer):
+class LanguageAwareSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор с поддержкой языков"""
+    
+    def get_localized_field(self, instance, field_name):
+        """Получить переведенное поле в зависимости от текущего языка"""
+        # Получаем язык из заголовка запроса или используем текущий язык Django
+        request = self.context.get('request')
+        if request:
+            current_language = request.headers.get('Accept-Language', 'ru')
+            # Преобразуем 'ky' в 'kg' для совместимости с полями базы данных
+            if current_language == 'ky':
+                current_language = 'kg'
+        else:
+            current_language = translation.get_language() or 'ru'
+            if current_language == 'ky':
+                current_language = 'kg'
+        
+        # Попробуем получить поле для текущего языка
+        localized_field = f"{field_name}_{current_language}"
+        if hasattr(instance, localized_field):
+            value = getattr(instance, localized_field)
+            if value:
+                return value
+        
+        # Если нет перевода для текущего языка, попробуем русский (по умолчанию)
+        default_field = f"{field_name}_ru"
+        if hasattr(instance, default_field):
+            value = getattr(instance, default_field)
+            if value:
+                return value
+        
+        # Если русского тоже нет, попробуем английский
+        english_field = f"{field_name}_en"
+        if hasattr(instance, english_field):
+            value = getattr(instance, english_field)
+            if value:
+                return value
+        
+        # Если ничего нет, вернем пустую строку
+        return ""
+
+
+class CareerCategorySerializer(LanguageAwareSerializer):
     """Сериализатор для категорий карьеры"""
+    display_name = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     
     class Meta:
         model = CareerCategory
@@ -18,20 +62,18 @@ class CareerCategorySerializer(serializers.ModelSerializer):
             'order'
         ]
     
-    def to_representation(self, instance):
-        """Переопределяем для возврата переведенных полей"""
-        data = super().to_representation(instance)
-        current_lang = get_language() or 'ru'
-        
-        # Возвращаем переведенные поля
-        data['display_name'] = getattr(instance, f'display_name_{current_lang}', instance.display_name)
-        data['description'] = getattr(instance, f'description_{current_lang}', instance.description)
-        
-        return data
+    def get_display_name(self, obj):
+        return self.get_localized_field(obj, 'display_name')
+    
+    def get_description(self, obj):
+        return self.get_localized_field(obj, 'description')
 
 
-class DepartmentSerializer(serializers.ModelSerializer):
+class DepartmentSerializer(LanguageAwareSerializer):
     """Сериализатор для подразделений"""
+    name = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    head_name = serializers.SerializerMethodField()
     
     class Meta:
         model = Department
@@ -46,19 +88,17 @@ class DepartmentSerializer(serializers.ModelSerializer):
             'is_active'
         ]
     
-    def to_representation(self, instance):
-        """Переопределяем для возврата переведенных полей"""
-        data = super().to_representation(instance)
-        current_lang = get_language() or 'ru'
-        
-        # Возвращаем переведенные поля
-        data['name'] = getattr(instance, f'name_{current_lang}', instance.name)
-        data['description'] = getattr(instance, f'description_{current_lang}', instance.description)
-        
-        return data
+    def get_name(self, obj):
+        return self.get_localized_field(obj, 'name')
+    
+    def get_description(self, obj):
+        return self.get_localized_field(obj, 'description')
+    
+    def get_head_name(self, obj):
+        return self.get_localized_field(obj, 'head_name')
 
 
-class VacancyListSerializer(serializers.ModelSerializer):
+class VacancyListSerializer(LanguageAwareSerializer):
     """Сериализатор для списка вакансий (краткая информация)"""
     category = CareerCategorySerializer(read_only=True)
     department = DepartmentSerializer(read_only=True)
@@ -66,6 +106,13 @@ class VacancyListSerializer(serializers.ModelSerializer):
     salary_display = serializers.SerializerMethodField()
     is_deadline_soon = serializers.ReadOnlyField()
     is_expired = serializers.ReadOnlyField()
+    
+    # Мультиязычные поля
+    title = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+    experience_years = serializers.SerializerMethodField()
+    education_level = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
     
     class Meta:
         model = Vacancy
@@ -92,25 +139,29 @@ class VacancyListSerializer(serializers.ModelSerializer):
             'applications_count'
         ]
     
+    def get_title(self, obj):
+        return self.get_localized_field(obj, 'title')
+    
+    def get_location(self, obj):
+        return self.get_localized_field(obj, 'location')
+    
+    def get_experience_years(self, obj):
+        return self.get_localized_field(obj, 'experience_years')
+    
+    def get_education_level(self, obj):
+        return self.get_localized_field(obj, 'education_level')
+    
+    def get_short_description(self, obj):
+        return self.get_localized_field(obj, 'short_description')
+    
     def get_tags_list(self, obj):
         return obj.get_tags_list()
     
     def get_salary_display(self, obj):
         return obj.get_salary_display()
-    
-    def to_representation(self, instance):
-        """Переопределяем для возврата переведенных полей"""
-        data = super().to_representation(instance)
-        current_lang = get_language() or 'ru'
-        
-        # Возвращаем переведенные поля
-        data['title'] = getattr(instance, f'title_{current_lang}', instance.title)
-        data['short_description'] = getattr(instance, f'short_description_{current_lang}', instance.short_description)
-        
-        return data
 
 
-class VacancyDetailSerializer(serializers.ModelSerializer):
+class VacancyDetailSerializer(LanguageAwareSerializer):
     """Сериализатор для детальной информации о вакансии"""
     category = CareerCategorySerializer(read_only=True)
     department = DepartmentSerializer(read_only=True)
@@ -121,6 +172,17 @@ class VacancyDetailSerializer(serializers.ModelSerializer):
     salary_display = serializers.SerializerMethodField()
     is_deadline_soon = serializers.ReadOnlyField()
     is_expired = serializers.ReadOnlyField()
+    
+    # Мультиязычные поля
+    title = serializers.SerializerMethodField()
+    location = serializers.SerializerMethodField()
+    experience_years = serializers.SerializerMethodField()
+    education_level = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    responsibilities = serializers.SerializerMethodField()
+    requirements = serializers.SerializerMethodField()
+    conditions = serializers.SerializerMethodField()
     
     class Meta:
         model = Vacancy
@@ -139,6 +201,9 @@ class VacancyDetailSerializer(serializers.ModelSerializer):
             'education_level',
             'short_description',
             'description',
+            'responsibilities',
+            'requirements',
+            'conditions',
             'responsibilities_list',
             'requirements_list',
             'conditions_list',
@@ -157,35 +222,68 @@ class VacancyDetailSerializer(serializers.ModelSerializer):
             'applications_count'
         ]
     
+    def get_title(self, obj):
+        return self.get_localized_field(obj, 'title')
+    
+    def get_location(self, obj):
+        return self.get_localized_field(obj, 'location')
+    
+    def get_experience_years(self, obj):
+        return self.get_localized_field(obj, 'experience_years')
+    
+    def get_education_level(self, obj):
+        return self.get_localized_field(obj, 'education_level')
+    
+    def get_short_description(self, obj):
+        return self.get_localized_field(obj, 'short_description')
+    
+    def get_description(self, obj):
+        return self.get_localized_field(obj, 'description')
+    
+    def get_responsibilities(self, obj):
+        return self.get_localized_field(obj, 'responsibilities')
+    
+    def get_requirements(self, obj):
+        return self.get_localized_field(obj, 'requirements')
+    
+    def get_conditions(self, obj):
+        return self.get_localized_field(obj, 'conditions')
+    
     def get_tags_list(self, obj):
         return obj.get_tags_list()
     
     def get_responsibilities_list(self, obj):
-        return obj.get_responsibilities_list()
+        # Получаем текущий язык из запроса
+        request = self.context.get('request')
+        if request:
+            current_language = request.headers.get('Accept-Language', 'ru')
+        else:
+            current_language = 'ru'
+        
+        return obj.get_responsibilities_list(current_language)
     
     def get_requirements_list(self, obj):
-        return obj.get_requirements_list()
+        # Получаем текущий язык из запроса
+        request = self.context.get('request')
+        if request:
+            current_language = request.headers.get('Accept-Language', 'ru')
+        else:
+            current_language = 'ru'
+        
+        return obj.get_requirements_list(current_language)
     
     def get_conditions_list(self, obj):
-        return obj.get_conditions_list()
+        # Получаем текущий язык из запроса
+        request = self.context.get('request')
+        if request:
+            current_language = request.headers.get('Accept-Language', 'ru')
+        else:
+            current_language = 'ru'
+        
+        return obj.get_conditions_list(current_language)
     
     def get_salary_display(self, obj):
         return obj.get_salary_display()
-    
-    def to_representation(self, instance):
-        """Переопределяем для возврата переведенных полей"""
-        data = super().to_representation(instance)
-        current_lang = get_language() or 'ru'
-        
-        # Возвращаем переведенные поля
-        data['title'] = getattr(instance, f'title_{current_lang}', instance.title)
-        data['short_description'] = getattr(instance, f'short_description_{current_lang}', instance.short_description)
-        data['description'] = getattr(instance, f'description_{current_lang}', instance.description)
-        data['responsibilities'] = getattr(instance, f'responsibilities_{current_lang}', instance.responsibilities)
-        data['requirements'] = getattr(instance, f'requirements_{current_lang}', instance.requirements)
-        data['working_conditions'] = getattr(instance, f'working_conditions_{current_lang}', instance.working_conditions)
-        
-        return data
 
 
 class VacancyApplicationSerializer(serializers.ModelSerializer):

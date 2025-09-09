@@ -9,17 +9,17 @@ from .models import (
 
 @admin.register(NewsCategory)
 class NewsCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
-    prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ['name']  # Предотвращаем изменение системных категорий
+    list_display = ['name', 'name_ru', 'slug']
+    prepopulated_fields = {'slug': ('name_ru',)}  # Изменяем источник на name_ru
+    # Убираем readonly_fields для name, чтобы избежать конфликта
 
 
 @admin.register(NewsTag)
 class NewsTagAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug', 'color_preview']
-    prepopulated_fields = {'slug': ('name',)}
+    list_display = ['name_ru', 'slug', 'color_preview']
+    prepopulated_fields = {'slug': ('name_ru',)}
     list_filter = ['color']
-    search_fields = ['name']
+    search_fields = ['name_ru', 'name_kg', 'name_en']
     
     def color_preview(self, obj):
         return format_html(
@@ -40,7 +40,7 @@ class EventInline(admin.StackedInline):
     extra = 0
     fieldsets = (
         ('Основная информация', {
-            'fields': ('event_date', 'event_time', 'end_time', 'location')
+            'fields': ('event_date', 'event_time', 'end_time', 'location_ru', 'location_kg', 'location_en')
         }),
         ('Детали события', {
             'fields': ('event_category', 'status', 'max_participants', 'current_participants')
@@ -73,27 +73,32 @@ class AnnouncementInline(admin.StackedInline):
 @admin.register(News)
 class NewsAdmin(admin.ModelAdmin):
     list_display = [
-        'title', 'category', 'author', 'published_at', 'views_count',
+        'title_ru', 'category', 'author_ru', 'published_at', 'views_count',
         'is_published', 'is_featured', 'is_pinned', 'image_preview'
     ]
     list_filter = [
         'category', 'is_published', 'is_featured', 'is_pinned',
         'created_at', 'published_at'
     ]
-    search_fields = ['title', 'summary', 'content', 'author']
-    prepopulated_fields = {'slug': ('title',)}
+    search_fields = ['title_ru', 'title_kg', 'title_en', 'summary_ru', 'summary_kg', 'summary_en', 'content_ru', 'content_kg', 'content_en', 'author_ru', 'author_kg', 'author_en']
+    prepopulated_fields = {'slug': ('title_ru',)}
     readonly_fields = ['created_at', 'updated_at', 'views_count', 'image_preview']
     date_hierarchy = 'published_at'
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title', 'slug', 'summary', 'content')
+            'fields': (
+                ('title_ru', 'title_kg', 'title_en'),
+                'slug',
+                ('summary_ru', 'summary_kg', 'summary_en'),
+                ('content_ru', 'content_kg', 'content_en')
+            )
         }),
         ('Медиа', {
             'fields': ('image', 'image_url', 'image_preview'),
         }),
         ('Классификация', {
-            'fields': ('category', 'author')
+            'fields': ('category', ('author_ru', 'author_kg', 'author_en'))
         }),
         ('Публикация', {
             'fields': ('published_at', 'is_published', 'is_featured', 'is_pinned')
@@ -139,14 +144,14 @@ class NewsAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = [
-        'get_title', 'event_date', 'event_time', 'location',
+        'get_title', 'event_date', 'event_time', 'location_ru',
         'event_category', 'status', 'participants_info', 'registration_required'
     ]
     list_filter = [
         'event_category', 'status', 'registration_required',
         'event_date', 'news__published_at'
     ]
-    search_fields = ['news__title', 'location', 'news__summary']
+    search_fields = ['news__title_ru', 'location_ru', 'news__summary_ru']
     date_hierarchy = 'event_date'
     
     fieldsets = (
@@ -154,7 +159,7 @@ class EventAdmin(admin.ModelAdmin):
             'fields': ('news',)
         }),
         ('Время и место', {
-            'fields': ('event_date', 'event_time', 'end_time', 'location')
+            'fields': ('event_date', 'event_time', 'end_time', ('location_ru', 'location_kg', 'location_en'))
         }),
         ('Детали события', {
             'fields': ('event_category', 'status')
@@ -169,9 +174,9 @@ class EventAdmin(admin.ModelAdmin):
     )
     
     def get_title(self, obj):
-        return obj.news.title
+        return obj.news.title_ru
     get_title.short_description = 'Название'
-    get_title.admin_order_field = 'news__title'
+    get_title.admin_order_field = 'news__title_ru'
     
     def participants_info(self, obj):
         if obj.max_participants:
@@ -219,9 +224,9 @@ class AnnouncementAdmin(admin.ModelAdmin):
     readonly_fields = ['is_deadline_approaching']
     
     def get_title(self, obj):
-        return obj.news.title
+        return obj.news.title_ru
     get_title.short_description = 'Название'
-    get_title.admin_order_field = 'news__title'
+    get_title.admin_order_field = 'news__title_ru'
     
     def get_is_pinned(self, obj):
         return obj.news.is_pinned

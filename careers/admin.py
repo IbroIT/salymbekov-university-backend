@@ -7,11 +7,11 @@ from .models import CareerCategory, Department, Vacancy, VacancyApplication
 
 @admin.register(CareerCategory)
 class CareerCategoryAdmin(admin.ModelAdmin):
-    list_display = ['display_name', 'name', 'icon', 'is_active', 'order', 'vacancies_count']
+    list_display = ['display_name_ru', 'name', 'icon', 'is_active', 'order', 'vacancies_count']
     list_filter = ['is_active', 'name']
-    search_fields = ['display_name', 'name']
+    search_fields = ['display_name_ru', 'display_name_kg', 'display_name_en', 'name']
     list_editable = ['is_active', 'order']
-    ordering = ['order', 'display_name']
+    ordering = ['order', 'display_name_ru']
     
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
@@ -26,18 +26,18 @@ class CareerCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
-    list_display = ['name', 'short_name', 'head_name', 'contact_email', 'contact_phone', 'is_active', 'vacancies_count']
+    list_display = ['name_ru', 'short_name', 'head_name_ru', 'contact_email', 'contact_phone', 'is_active', 'vacancies_count']
     list_filter = ['is_active', 'created_at']
-    search_fields = ['name', 'short_name', 'head_name']
+    search_fields = ['name_ru', 'name_kg', 'name_en', 'short_name', 'head_name_ru', 'head_name_kg', 'head_name_en']
     list_editable = ['is_active']
     readonly_fields = ['created_at']
     
     fieldsets = (
         (_('Основная информация'), {
-            'fields': ('name', 'short_name', 'description')
+            'fields': (('name_ru', 'name_kg', 'name_en'), 'short_name', ('description_ru', 'description_kg', 'description_en'))
         }),
         (_('Руководство'), {
-            'fields': ('head_name',)
+            'fields': (('head_name_ru', 'head_name_kg', 'head_name_en'),)
         }),
         (_('Контактная информация'), {
             'fields': ('contact_email', 'contact_phone')
@@ -75,7 +75,7 @@ class VacancyApplicationInline(admin.TabularInline):
 @admin.register(Vacancy)
 class VacancyAdmin(admin.ModelAdmin):
     list_display = [
-        'title', 'category', 'department', 'employment_type', 
+        'title_ru', 'category', 'department', 'employment_type', 
         'status', 'is_featured', 'posted_date', 'deadline_status', 
         'views_count', 'applications_count_display'
     ]
@@ -83,28 +83,36 @@ class VacancyAdmin(admin.ModelAdmin):
         'status', 'category', 'department', 'employment_type',
         'is_featured', 'posted_date', 'deadline'
     ]
-    search_fields = ['title', 'short_description', 'tags']
+    search_fields = ['title_ru', 'title_kg', 'title_en', 'short_description_ru', 'short_description_kg', 'short_description_en', 'tags']
     list_editable = ['status', 'is_featured']
-    readonly_fields = ['slug', 'posted_date', 'updated_at', 'views_count', 'applications_count']
-    prepopulated_fields = {'slug': ('title',)}
+    readonly_fields = ['posted_date', 'updated_at', 'views_count', 'applications_count']
+    prepopulated_fields = {'slug': ('title_ru',)}
     inlines = [VacancyApplicationInline]
     date_hierarchy = 'posted_date'
     
     fieldsets = (
         (_('Основная информация'), {
-            'fields': ('title', 'slug', 'category', 'department', 'status', 'is_featured')
+            'fields': (('title_ru', 'title_kg', 'title_en'), 'slug', 'category', 'department', 'status', 'is_featured')
         }),
         (_('Детали работы'), {
             'fields': (
-                'location', 'employment_type', 'salary_min', 'salary_max',
-                'experience_years', 'education_level'
+                ('location_ru', 'location_kg', 'location_en'), 'employment_type', 'salary_min', 'salary_max',
+                ('experience_years_ru', 'experience_years_kg', 'experience_years_en'), 
+                ('education_level_ru', 'education_level_kg', 'education_level_en')
             )
         }),
         (_('Описание'), {
-            'fields': ('short_description', 'description')
+            'fields': (
+                ('short_description_ru', 'short_description_kg', 'short_description_en'), 
+                ('description_ru', 'description_kg', 'description_en')
+            )
         }),
         (_('Требования и условия'), {
-            'fields': ('responsibilities', 'requirements', 'conditions')
+            'fields': (
+                ('responsibilities_ru', 'responsibilities_kg', 'responsibilities_en'), 
+                ('requirements_ru', 'requirements_kg', 'requirements_en'), 
+                ('conditions_ru', 'conditions_kg', 'conditions_en')
+            )
         }),
         (_('Дополнительно'), {
             'fields': ('tags', 'deadline')
