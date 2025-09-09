@@ -1,0 +1,582 @@
+/* Custom Admin Styles for Salymbekov University */
+
+:root {
+    --primary-blue: #1e40af;
+    --light-blue: #3b82f6;
+    --dark-blue: #1e3a8a;
+    --accent-blue: #60a5fa;
+    --light-bg: #f8fafc;
+    --white: #ffffff;
+    --light-gray: #f1f5f9;
+    --medium-gray: #64748b;
+    --dark-gray: #334155;
+    --border-color: #e2e8f0;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Body and main layout */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    margin: 0;
+    padding: 0;
+    color: var(--dark-gray);
+}
+
+/* Header */
+#header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+    color: var(--white);
+    box-shadow: var(--shadow-lg);
+    border: none;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+#branding {
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#branding h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--white);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#branding h1 a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+#branding h1 a:hover {
+    color: var(--accent-blue);
+}
+
+/* User tools */
+#user-tools {
+    float: right;
+    padding: 0 20px;
+    margin-top: 0;
+    color: var(--white);
+}
+
+#user-tools a {
+    color: var(--white);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin-left: 5px;
+}
+
+#user-tools a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+/* Navigation */
+.breadcrumbs {
+    background: var(--white);
+    padding: 15px 20px;
+    margin: 0;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+.breadcrumbs a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 0;
+}
+
+.breadcrumbs a:hover {
+    color: var(--light-blue);
+    text-decoration: underline;
+}
+
+/* Main content area */
+#content {
+    padding: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Dashboard styling */
+#content-main {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+/* Module styling */
+.module {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.module:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.module h2 {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    margin: 0;
+    padding: 20px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    border: none;
+}
+
+.module caption {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    padding: 20px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+}
+
+/* Table styling */
+.module table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.module th, .module td {
+    padding: 15px 25px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.module th {
+    background: var(--light-bg);
+    font-weight: 600;
+    color: var(--dark-gray);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.module tr:hover {
+    background: var(--light-bg);
+}
+
+/* Dashboard modules */
+.dashboard .module {
+    display: inline-block;
+    vertical-align: top;
+    width: calc(50% - 15px);
+    margin-right: 30px;
+    margin-bottom: 30px;
+}
+
+.dashboard .module:nth-child(even) {
+    margin-right: 0;
+}
+
+/* Buttons */
+.button, input[type="submit"], input[type="button"], .submit-row input, button {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.button:hover, input[type="submit"]:hover, input[type="button"]:hover, .submit-row input:hover, button:hover {
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--primary-blue) 100%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.button:active, input[type="submit"]:active, input[type="button"]:active, .submit-row input:active, button:active {
+    transform: translateY(0);
+}
+
+/* Secondary buttons */
+.button.default, input[type="submit"].default {
+    background: var(--medium-gray);
+}
+
+.button.default:hover, input[type="submit"].default:hover {
+    background: var(--dark-gray);
+}
+
+/* Danger buttons */
+.deletelink, .deletelink-box a {
+    background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%) !important;
+    color: var(--white) !important;
+}
+
+.deletelink:hover, .deletelink-box a:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, var(--danger) 100%) !important;
+}
+
+/* Forms */
+.form-row {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+fieldset {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: var(--shadow);
+}
+
+fieldset h2 {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    padding: 15px 20px;
+    margin: -25px -25px 20px -25px;
+    border-radius: 12px 12px 0 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Form inputs */
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], 
+input[type="number"], input[type="date"], input[type="datetime-local"], 
+textarea, select {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 500px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, 
+input[type="url"]:focus, input[type="number"]:focus, input[type="date"]:focus, 
+input[type="datetime-local"]:focus, textarea:focus, select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    outline: none;
+}
+
+/* Links */
+a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--light-blue);
+    text-decoration: underline;
+}
+
+/* Messages */
+.messagelist {
+    margin: 0 0 20px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.messagelist li {
+    padding: 15px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+}
+
+.messagelist .info {
+    background: #dbeafe;
+    border-left: 4px solid var(--primary-blue);
+    color: var(--dark-blue);
+}
+
+.messagelist .success {
+    background: #d1fae5;
+    border-left: 4px solid var(--success);
+    color: #065f46;
+}
+
+.messagelist .warning {
+    background: #fef3c7;
+    border-left: 4px solid var(--warning);
+    color: #92400e;
+}
+
+.messagelist .error {
+    background: #fee2e2;
+    border-left: 4px solid var(--danger);
+    color: #991b1b;
+}
+
+/* Pagination */
+.paginator {
+    text-align: center;
+    margin: 30px 0;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.paginator a, .paginator .this-page {
+    display: inline-block;
+    padding: 10px 15px;
+    margin: 0 5px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.paginator a {
+    background: var(--light-bg);
+    color: var(--primary-blue);
+    border: 1px solid var(--border-color);
+}
+
+.paginator a:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.paginator .this-page {
+    background: var(--primary-blue);
+    color: var(--white);
+    border: 1px solid var(--primary-blue);
+}
+
+/* Search */
+#changelist-search {
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#changelist-search input[type="text"] {
+    flex: 1;
+    margin: 0;
+    max-width: none;
+}
+
+/* Filters */
+#changelist-filter {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 0;
+    box-shadow: var(--shadow);
+    margin-left: 20px;
+}
+
+#changelist-filter h2 {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px 12px 0 0;
+}
+
+#changelist-filter h3 {
+    padding: 15px 20px 10px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-gray);
+    border-bottom: 1px solid var(--border-color);
+}
+
+#changelist-filter ul {
+    padding: 10px 0;
+    margin: 0;
+    list-style: none;
+}
+
+#changelist-filter li {
+    padding: 8px 20px;
+}
+
+#changelist-filter a {
+    color: var(--medium-gray);
+    padding: 5px 0;
+    display: block;
+    transition: color 0.3s ease;
+}
+
+#changelist-filter a:hover, #changelist-filter a.selected {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+/* Result list */
+#result_list {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+#result_list thead th {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--light-blue) 100%);
+    color: var(--white);
+    padding: 15px 20px;
+    font-weight: 600;
+    border: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+#result_list tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+#result_list tbody tr:hover {
+    background: var(--light-bg);
+}
+
+#result_list tbody tr:last-child {
+    border-bottom: none;
+}
+
+#result_list td, #result_list th {
+    padding: 15px 20px;
+    border: none;
+}
+
+/* Actions */
+.actions {
+    background: var(--light-bg);
+    padding: 15px 20px;
+    border-top: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.actions select {
+    max-width: 200px;
+}
+
+.actions button {
+    margin: 0;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    #content {
+        padding: 15px;
+    }
+    
+    .dashboard .module {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    #changelist-filter {
+        margin-left: 0;
+        margin-top: 20px;
+    }
+    
+    #changelist-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #user-tools {
+        float: none;
+        text-align: center;
+        padding: 10px;
+    }
+    
+    #branding {
+        text-align: center;
+        padding: 10px;
+    }
+    
+    #branding h1 {
+        font-size: 20px;
+    }
+}
+
+/* Loading animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.module, .messagelist li {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Custom logo space */
+#branding::before {
+    content: "🎓";
+    font-size: 28px;
+    margin-right: 10px;
+}
+
+/* Enhanced focus styles for accessibility */
+*:focus {
+    outline: 3px solid rgba(30, 64, 175, 0.3);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    #header, #changelist-filter, .actions {
+        display: none;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .module {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}

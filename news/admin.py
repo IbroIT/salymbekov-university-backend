@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
+from django.db import models
+from django.forms import Textarea
+from core_admin import BaseModelAdmin, TranslationAdminMixin, image_preview, format_date_field
 from .models import (
     News, NewsCategory, Event, Announcement, 
     NewsTag, NewsTagRelation, NewsView
@@ -8,25 +11,32 @@ from .models import (
 
 
 @admin.register(NewsCategory)
-class NewsCategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'name_ru', 'slug']
-    prepopulated_fields = {'slug': ('name_ru',)}  # Изменяем источник на name_ru
-    # Убираем readonly_fields для name, чтобы избежать конфликта
+class NewsCategoryAdmin(BaseModelAdmin, TranslationAdminMixin):
+    list_display = ['name_ru', 'slug']
+    prepopulated_fields = {'slug': ('name_ru',)}
+    search_fields = ['name_ru', 'name_ky', 'name_en']
+    
+    def get_fields(self, request, obj=None):
+        fields = ['name_ru', 'name_ky', 'name_en', 'slug']
+        return fields
 
 
 @admin.register(NewsTag)
-class NewsTagAdmin(admin.ModelAdmin):
+class NewsTagAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = ['name_ru', 'slug', 'color_preview']
     prepopulated_fields = {'slug': ('name_ru',)}
     list_filter = ['color']
-    search_fields = ['name_ru', 'name_kg', 'name_en']
+    search_fields = ['name_ru', 'name_ky', 'name_en']
     
     def color_preview(self, obj):
         return format_html(
-            '<div style="width: 30px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>',
-            obj.color
+            '<div style="width: 40px; height: 25px; background-color: {}; '
+            'border: 2px solid #e2e8f0; border-radius: 6px; display: inline-block; '
+            'box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div> '
+            '<span style="margin-left: 10px; font-weight: 500; color: #374151;">{}</span>',
+            obj.color, obj.color
         )
-    color_preview.short_description = 'Цвет'
+    color_preview.short_description = '🎨 Цвет'
 
 
 class NewsTagInline(admin.TabularInline):
@@ -71,39 +81,52 @@ class AnnouncementInline(admin.StackedInline):
 
 
 @admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
+class NewsAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = [
-        'title_ru', 'category', 'author_ru', 'published_at', 'views_count',
-        'is_published', 'is_featured', 'is_pinned', 'image_preview'
+        'title_ru', 'category', 'author_ru', 'formatted_published_at', 
+        'views_count', 'status_badges', 'news_image_preview'
     ]
     list_filter = [
         'category', 'is_published', 'is_featured', 'is_pinned',
         'created_at', 'published_at'
     ]
-    search_fields = ['title_ru', 'title_kg', 'title_en', 'summary_ru', 'summary_kg', 'summary_en', 'content_ru', 'content_kg', 'content_en', 'author_ru', 'author_kg', 'author_en']
+    search_fields = [
+        'title_ru', 'title_ky', 'title_en', 
+        'summary_ru', 'summary_ky', 'summary_en', 
+        'content_ru', 'content_ky', 'content_en', 
+        'author_ru', 'author_ky', 'author_en'
+    ]
     prepopulated_fields = {'slug': ('title_ru',)}
-    readonly_fields = ['created_at', 'updated_at', 'views_count', 'image_preview']
     date_hierarchy = 'published_at'
+    list_per_page = 20
     
     fieldsets = (
-        ('Основная информация', {
+        ('📝 Основная информация', {
             'fields': (
-                ('title_ru', 'title_kg', 'title_en'),
+                'title_ru', 'title_ky', 'title_en',
                 'slug',
-                ('summary_ru', 'summary_kg', 'summary_en'),
-                ('content_ru', 'content_kg', 'content_en')
+                'summary_ru', 'summary_ky', 'summary_en',
             )
         }),
-        ('Медиа', {
-            'fields': ('image', 'image_url', 'image_preview'),
+        ('📖 Содержание', {
+            'fields': (
+                'content_ru', 'content_ky', 'content_en',
+            ),
+            'classes': ['collapse']
         }),
-        ('Классификация', {
-            'fields': ('category', ('author_ru', 'author_kg', 'author_en'))
+        ('🖼️ Медиа', {
+            'fields': ('image', 'image_url', 'news_image_preview'),
         }),
-        ('Публикация', {
-            'fields': ('published_at', 'is_published', 'is_featured', 'is_pinned')
+        ('📂 Классификация', {
+            'fields': ('category', 'author_ru', 'author_ky', 'author_en')
         }),
-        ('Метаинформация', {
+        ('🚀 Публикация', {
+            'fields': (
+                'published_at', 
+                ('is_published', 'is_featured', 'is_pinned')
+            )
+        }),
+        ('📊 Статистика', {
             'fields': ('created_at', 'updated_at', 'views_count'),
             'classes': ['collapse']
         }),
@@ -111,13 +134,42 @@ class NewsAdmin(admin.ModelAdmin):
     
     inlines = [NewsTagInline, EventInline, AnnouncementInline]
     
-    def image_preview(self, obj):
+    # Кастомные методы для красивого отображения
+    def news_image_preview(self, obj):
         if obj.image:
-            return format_html('<img src="{}" width="100" height="60" />', obj.image.url)
+            return format_html(
+                '<img src="{}" style="max-height: 80px; max-width: 120px; '
+                'border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); '
+                'object-fit: cover;" />',
+                obj.image.url
+            )
         elif obj.image_url:
-            return format_html('<img src="{}" width="100" height="60" />', obj.image_url)
-        return "Нет изображения"
-    image_preview.short_description = 'Превью'
+            return format_html(
+                '<img src="{}" style="max-height: 80px; max-width: 120px; '
+                'border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); '
+                'object-fit: cover;" />',
+                obj.image_url
+            )
+        return format_html('<div style="color: #9ca3af; font-style: italic;">📷 Нет изображения</div>')
+    news_image_preview.short_description = '🖼️ Превью'
+    
+    def status_badges(self, obj):
+        badges = []
+        if obj.is_published:
+            badges.append('<span style="background: #10b981; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">✅ Опубликовано</span>')
+        else:
+            badges.append('<span style="background: #6b7280; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">⏳ Черновик</span>')
+        
+        if obj.is_featured:
+            badges.append('<span style="background: #f59e0b; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">⭐ Рекомендуемое</span>')
+        
+        if obj.is_pinned:
+            badges.append('<span style="background: #ef4444; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">📌 Закрепленное</span>')
+        
+        return format_html('<br>'.join(badges))
+    status_badges.short_description = '🏷️ Статусы'
+    
+    formatted_published_at = format_date_field('published_at', '📅 Опубликовано')
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('category')
@@ -125,16 +177,19 @@ class NewsAdmin(admin.ModelAdmin):
     actions = ['make_published', 'make_unpublished', 'make_featured', 'make_pinned']
     
     def make_published(self, request, queryset):
-        queryset.update(is_published=True)
-    make_published.short_description = "Опубликовать выбранные новости"
+        updated = queryset.update(is_published=True)
+        self.message_user(request, f'✅ Опубликовано {updated} новостей.')
+    make_published.short_description = "📢 Опубликовать выбранные новости"
     
     def make_unpublished(self, request, queryset):
-        queryset.update(is_published=False)
-    make_unpublished.short_description = "Снять с публикации выбранные новости"
+        updated = queryset.update(is_published=False)
+        self.message_user(request, f'⏸️ Сняты с публикации {updated} новостей.')
+    make_unpublished.short_description = "⏸️ Снять с публикации выбранные новости"
     
     def make_featured(self, request, queryset):
-        queryset.update(is_featured=True)
-    make_featured.short_description = "Сделать рекомендуемыми"
+        updated = queryset.update(is_featured=True)
+        self.message_user(request, f'⭐ Сделаны рекомендуемыми {updated} новостей.')
+    make_featured.short_description = "⭐ Сделать рекомендуемыми"
     
     def make_pinned(self, request, queryset):
         queryset.update(is_pinned=True)
