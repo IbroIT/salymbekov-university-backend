@@ -10,8 +10,8 @@ from .models import (
 @admin.register(NewsCategory)
 class NewsCategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'name_ru', 'slug']
-    prepopulated_fields = {'slug': ('name',)}
-    readonly_fields = ['name']  # Предотвращаем изменение системных категорий
+    prepopulated_fields = {'slug': ('name_ru',)}  # Изменяем источник на name_ru
+    # Убираем readonly_fields для name, чтобы избежать конфликта
 
 
 @admin.register(NewsTag)
