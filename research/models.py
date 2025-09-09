@@ -42,7 +42,9 @@ class ResearchCenter(models.Model):
     description_en = models.TextField("Описание (англ)")
     description_kg = models.TextField("Описание (кыр)")
     
-    director = models.CharField("Директор", max_length=200)
+    director_ru = models.CharField("Директор (рус)", max_length=200)
+    director_en = models.CharField("Директор (англ)", max_length=200)
+    director_kg = models.CharField("Директор (кыр)", max_length=200)
     staff_count = models.IntegerField("Количество сотрудников", default=0)
     established_year = models.IntegerField("Год основания")
     
@@ -88,7 +90,9 @@ class Grant(models.Model):
     title_en = models.CharField("Название (англ)", max_length=300)
     title_kg = models.CharField("Название (кыр)", max_length=300)
     
-    organization = models.CharField("Организация", max_length=200)
+    organization_ru = models.CharField("Организация (рус)", max_length=200)
+    organization_en = models.CharField("Организация (англ)", max_length=200)
+    organization_kg = models.CharField("Организация (кыр)", max_length=200)
     amount = models.CharField("Сумма", max_length=100)
     deadline = models.DateField("Дедлайн подачи")
     
@@ -120,7 +124,7 @@ class Grant(models.Model):
         ordering = ['-created_at']
         
     def __str__(self):
-        return f"{self.title_ru} ({self.organization})"
+        return f"{self.title_ru} ({self.organization_ru})"
     
     @property
     def is_deadline_soon(self):
@@ -201,7 +205,9 @@ class Publication(models.Model):
     title_en = models.CharField("Название (англ)", max_length=500)
     title_kg = models.CharField("Название (кыр)", max_length=500)
     
-    authors = models.CharField("Авторы", max_length=500)
+    authors_ru = models.CharField("Авторы (рус)", max_length=500)
+    authors_en = models.CharField("Авторы (англ)", max_length=500)
+    authors_kg = models.CharField("Авторы (кыр)", max_length=500)
     journal = models.CharField("Журнал/Издательство", max_length=300)
     
     publication_date = models.DateField("Дата публикации")
