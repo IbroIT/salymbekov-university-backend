@@ -1,0 +1,199 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom_admin.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/advanced_admin.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    
+    <style>
+        :root {
+            --university-primary: #1e40af;
+            --university-secondary: #3b82f6;
+            --university-accent: #60a5fa;
+            --university-dark: #1e3a8a;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        /* Улучшенный логотип университета */
+        #branding::before {
+            content: "🎓";
+            font-size: 28px;
+            margin-right: 12px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        /* Анимация загрузки с улучшениями */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid var(--university-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        /* Улучшенные уведомления */
+        .messagelist li {
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 15px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block title %}- {{ title|default:"Административная панель" }}{% endblock %}
+
+{% block branding %}
+    <div id="branding">
+        <h1 id="site-name">
+            <a href="{% url 'admin:index' %}">
+                Salymbekov University
+            </a>
+        </h1>
+        <div class="site-subtitle">
+            <i class="fas fa-cog"></i> Административная панель
+        </div>
+    </div>
+{% endblock %}
+
+{% block nav-global %}
+    <!-- Глобальное меню навигации -->
+    <div class="nav-global">
+        <a target="_blank"  class="nav-link"><i class="fas fa-home"></i> На сайт</a>
+        <a href="/admin/statistics/" class="nav-link"><i class="fas fa-chart-bar"></i> Статистика</a>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <div id="footer">
+        <div class="footer-content">
+            <p class="copyright">
+                © {{ "now"|date:"Y" }} Университет Салымбекова. Все права защищены.
+            </p>
+            <p class="version">
+                <i class="fas fa-code-branch"></i> Система управления контентом v2.1
+            </p>
+            <div class="footer-links">
+                <a href="/admin/help/"><i class="fas fa-question-circle"></i> Помощь</a>
+                <a href="/admin/support/"><i class="fas fa-headset"></i> Поддержка</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Улучшенная обработка форм
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    // Проверка валидности формы
+                    if (!form.checkValidity()) {
+                        e.preventDefault();
+                        form.reportValidity();
+                        return;
+                    }
+                    
+                    const loading = document.createElement('div');
+                    loading.className = 'loading-overlay';
+                    loading.innerHTML = '<div class="loading-spinner"></div>';
+                    document.body.appendChild(loading);
+                    
+                    // Автоматическое скрытие через 10 секунд на случай ошибок
+                    setTimeout(() => {
+                        loading.classList.add('hidden');
+                        setTimeout(() => loading.remove(), 300);
+                    }, 10000);
+                });
+            });
+            
+            // Улучшенная подсветка активного меню
+            const currentPath = window.location.pathname;
+            const menuLinks = document.querySelectorAll('#nav-sidebar a, .nav-global a');
+            menuLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                    // Также помечаем родительские элементы
+                    let parent = link.closest('.module');
+                    if (parent) parent.classList.add('active-module');
+                }
+            });
+            
+            // Автофокус с проверкой
+            const focusableElements = document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"], textarea, select');
+            for (let el of focusableElements) {
+                if (el && !el.readOnly && !el.disabled && el.offsetParent !== null) {
+                    el.focus();
+                    break;
+                }
+            }
+            
+            // Быстрые клавиши
+            document.addEventListener('keydown', function(e) {
+                // Ctrl + S для сохранения
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    const saveBtn = document.querySelector('input[type="submit"][name="_save"], input[type="submit"][value="Сохранить"]');
+                    if (saveBtn) saveBtn.click();
+                }
+                
+                // Escape для отмены
+                if (e.key === 'Escape') {
+                    const cancelBtn = document.querySelector('input[type="submit"][name="_addanother"], .cancel-link');
+                    if (cancelBtn) cancelBtn.click();
+                }
+            });
+            
+            // Анимация загрузки для AJAX-действий
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                const loading = document.createElement('div');
+                loading.className = 'loading-overlay';
+                loading.innerHTML = '<div class="loading-spinner"></div>';
+                document.body.appendChild(loading);
+                
+                return originalFetch.apply(this, args).finally(() => {
+                    loading.classList.add('hidden');
+                    setTimeout(() => loading.remove(), 300);
+                });
+            };
+        });
+    </script>
+{% endblock %}
