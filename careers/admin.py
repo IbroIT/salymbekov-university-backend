@@ -2,26 +2,49 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Count
+from core_admin import BaseModelAdmin, TranslationAdminMixin, image_preview, format_date_field
 from .models import CareerCategory, Department, Vacancy, VacancyApplication
 
 
 @admin.register(CareerCategory)
-class CareerCategoryAdmin(admin.ModelAdmin):
-    list_display = ['display_name_ru', 'name', 'icon', 'is_active', 'order', 'vacancies_count']
+class CareerCategoryAdmin(BaseModelAdmin, TranslationAdminMixin):
+    list_display = [
+        'display_name_ru', 'name', 'icon_preview', 'colored_status', 
+        'order', 'vacancies_count_display'
+    ]
     list_filter = ['is_active', 'name']
     search_fields = ['display_name_ru', 'display_name_kg', 'display_name_en', 'name']
-    list_editable = ['is_active', 'order']
+    list_editable = ['order']
     ordering = ['order', 'display_name_ru']
+    readonly_fields = ['icon_preview', 'vacancies_count_display']
     
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
             vacancies_count=Count('vacancy', distinct=True)
         )
     
-    def vacancies_count(self, obj):
-        return obj.vacancies_count
-    vacancies_count.short_description = _('Количество вакансий')
-    vacancies_count.admin_order_field = 'vacancies_count'
+    def icon_preview(self, obj):
+        if obj.icon:
+            return format_html(
+                '<span style="font-size: 20px; padding: 6px; background: #3b82f6; '
+                'color: white; border-radius: 6px; display: inline-block; '
+                'min-width: 32px; text-align: center; '
+                'box-shadow: 0 2px 4px rgba(0,0,0,0.1);">{}</span>',
+                obj.icon
+            )
+        return '📄'
+    icon_preview.short_description = '🎯 Иконка'
+    
+    def vacancies_count_display(self, obj):
+        count = getattr(obj, 'vacancies_count', 0)
+        return format_html(
+            '<span style="background: #10b981; color: white; padding: 4px 8px; '
+            'border-radius: 12px; font-size: 12px; font-weight: 600;">'
+            '💼 {} вакансий</span>',
+            count
+        )
+    vacancies_count_display.short_description = '💼 Вакансии'
+    vacancies_count_display.admin_order_field = 'vacancies_count'
 
 
 @admin.register(Department)
@@ -73,58 +96,120 @@ class VacancyApplicationInline(admin.TabularInline):
 
 
 @admin.register(Vacancy)
-class VacancyAdmin(admin.ModelAdmin):
+class VacancyAdmin(BaseModelAdmin, TranslationAdminMixin):
     list_display = [
-        'title_ru', 'category', 'department', 'employment_type', 
-        'status', 'is_featured', 'posted_date', 'deadline_status', 
-        'views_count', 'applications_count_display'
+        'title_ru', 'category', 'department', 'employment_type_display', 
+        'status_badge', 'is_featured', 'deadline', 'applications_count_display'
     ]
     list_filter = [
         'status', 'category', 'department', 'employment_type',
         'is_featured', 'posted_date', 'deadline'
     ]
-    search_fields = ['title_ru', 'title_kg', 'title_en', 'short_description_ru', 'short_description_kg', 'short_description_en', 'tags']
-    list_editable = ['status', 'is_featured']
-    readonly_fields = ['posted_date', 'updated_at', 'views_count', 'applications_count']
+    search_fields = [
+        'title_ru', 'title_kg', 'title_en', 
+        'short_description_ru', 'short_description_kg', 'short_description_en', 
+        'tags'
+    ]
+    list_editable = ['is_featured']
     prepopulated_fields = {'slug': ('title_ru',)}
-    inlines = [VacancyApplicationInline]
     date_hierarchy = 'posted_date'
+    list_per_page = 15
+    readonly_fields = ['posted_date', 'updated_at', 'views_count', 'applications_count']
     
     fieldsets = (
-        (_('Основная информация'), {
-            'fields': (('title_ru', 'title_kg', 'title_en'), 'slug', 'category', 'department', 'status', 'is_featured')
-        }),
-        (_('Детали работы'), {
+        ('📋 Основная информация', {
             'fields': (
-                ('location_ru', 'location_kg', 'location_en'), 'employment_type', 'salary_min', 'salary_max',
+                'title_ru', 'title_kg', 'title_en',
+                'slug', 'category', 'department', 
+                ('status', 'is_featured')
+            )
+        }),
+        ('💼 Детали работы', {
+            'fields': (
+                ('location_ru', 'location_kg', 'location_en'), 
+                'employment_type', 
+                ('salary_min', 'salary_max'),
                 ('experience_years_ru', 'experience_years_kg', 'experience_years_en'), 
                 ('education_level_ru', 'education_level_kg', 'education_level_en')
             )
         }),
-        (_('Описание'), {
+        ('📝 Описание', {
             'fields': (
                 ('short_description_ru', 'short_description_kg', 'short_description_en'), 
                 ('description_ru', 'description_kg', 'description_en')
-            )
+            ),
+            'classes': ['collapse']
         }),
-        (_('Требования и условия'), {
+        ('📋 Требования и условия', {
             'fields': (
                 ('responsibilities_ru', 'responsibilities_kg', 'responsibilities_en'), 
                 ('requirements_ru', 'requirements_kg', 'requirements_en'), 
                 ('conditions_ru', 'conditions_kg', 'conditions_en')
-            )
+            ),
+            'classes': ['collapse']
         }),
-        (_('Дополнительно'), {
+        ('🏷️ Дополнительно', {
             'fields': ('tags', 'deadline')
         }),
-        (_('Контактная информация'), {
+        ('📞 Контактная информация', {
             'fields': ('contact_person', 'contact_email', 'contact_phone')
         }),
-        (_('Статистика'), {
+        ('📊 Статистика', {
             'fields': ('views_count', 'applications_count', 'posted_date', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
+    
+    def employment_type_display(self, obj):
+        type_colors = {
+            'full_time': '#10b981',
+            'part_time': '#f59e0b', 
+            'contract': '#6366f1',
+            'internship': '#8b5cf6'
+        }
+        color = type_colors.get(obj.employment_type, '#6b7280')
+        return format_html(
+            '<span style="background: {}; color: white; padding: 4px 8px; '
+            'border-radius: 12px; font-size: 12px; font-weight: 600;">{}</span>',
+            color, obj.get_employment_type_display()
+        )
+    employment_type_display.short_description = '💼 Тип занятости'
+    
+    def status_badge(self, obj):
+        status_colors = {
+            'draft': '#6b7280',
+            'active': '#10b981',
+            'closed': '#ef4444',
+            'paused': '#f59e0b'
+        }
+        color = status_colors.get(obj.status, '#6b7280')
+        return format_html(
+            '<span style="background: {}; color: white; padding: 4px 8px; '
+            'border-radius: 12px; font-size: 12px; font-weight: 600;">{}</span>',
+            color, obj.get_status_display()
+        )
+    status_badge.short_description = '📊 Статус'
+    
+    def featured_badge(self, obj):
+        if obj.is_featured:
+            return format_html(
+                '<span style="background: #f59e0b; color: white; padding: 4px 8px; '
+                'border-radius: 12px; font-size: 12px; font-weight: 600;">⭐ Рекомендуемая</span>'
+            )
+        return ''
+    featured_badge.short_description = '⭐ Рекомендуемая'
+    
+    def applications_count_display(self, obj):
+        count = getattr(obj, 'applications_count', 0) or 0
+        return format_html(
+            '<span style="background: #3b82f6; color: white; padding: 4px 8px; '
+            'border-radius: 12px; font-size: 12px; font-weight: 600;">'
+            '📝 {} заявок</span>',
+            count
+        )
+    applications_count_display.short_description = '📝 Заявки'
+    
+    formatted_deadline = format_date_field('deadline', '⏰ Срок подачи')
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('category', 'department')
@@ -182,7 +267,7 @@ class VacancyApplicationAdmin(admin.ModelAdmin):
     list_filter = ['status', 'submitted_at', 'vacancy__category', 'vacancy__department']
     search_fields = [
         'first_name', 'last_name', 'email', 'phone',
-        'vacancy__title', 'vacancy__department__name'
+        'vacancy__title_ru'
     ]
     list_editable = ['status']
     readonly_fields = ['submitted_at', 'vacancy', 'first_name', 'last_name', 'email', 'phone', 'resume']
