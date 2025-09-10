@@ -1,0 +1,522 @@
+/* Enhanced Custom Admin Styles for Salymbekov University */
+
+:root {
+    --university-primary: #1e40af;
+    --university-secondary: #3b82f6;
+    --university-accent: #60a5fa;
+    --university-dark: #1e3a8a;
+    --university-light: #dbeafe;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+}
+
+/* Темная тема с улучшениями */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #111827;
+        --bg-secondary: #1f2937;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --border-color: #374151;
+    }
+    
+    body {
+        background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        color: var(--text-primary);
+    }
+    
+    #header {
+        background: linear-gradient(135deg, var(--university-dark) 0%, #2d4fa9 100%);
+    }
+}
+
+/* Улучшенная анимация */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Основные улучшения */
+body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+}
+
+/* Ограничиваем ширину основного контента */
+#container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+#content {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Основные контейнеры админки */
+#content-main {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.dashboard #content {
+    max-width: 100%;
+}
+
+.dashboard .module {
+    max-width: 100%;
+}
+
+/* Changelist (списки объектов) */
+#changelist {
+    max-width: 100%;
+}
+
+#changelist .results {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Формы */
+.form-row {
+    max-width: 100%;
+}
+
+.aligned .form-row {
+    max-width: 100%;
+}
+
+/* Для больших экранов делаем контент еще уже */
+@media (min-width: 1400px) {
+    #container {
+        max-width: 1000px;
+    }
+}
+
+/* Улучшенный хедер */
+#header {
+    background: linear-gradient(135deg, var(--university-primary) 0%, var(--university-secondary) 100%);
+    box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+#branding {
+    padding: 0 25px;
+}
+
+#branding h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.site-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Глобальная навигация */
+.nav-global {
+    display: flex;
+    gap: 15px;
+    padding: 0 25px;
+    margin-left: auto;
+}
+
+.nav-link {
+    color: white !important;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Улучшенные модули */
+.module {
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.module:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module h2 {
+    font-size: 1.1rem;
+    padding: 15px 20px;
+    background: black;  /* Тот же приглушенный синий как в заголовках таблиц */
+    color: white;
+    margin: 0;
+    font-weight: 600;
+}
+
+.module caption {
+    background: black !important;  /* Для заголовков таблиц внутри модулей */
+    color: white !important;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+/* Улучшенные таблицы */
+#result_list {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+#result_list thead th {
+    background: #343a40;  /* Темно-серый заголовок */
+    color: white;
+    padding: 12px 15px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+}
+
+#result_list tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #e2e8f0;
+    background:#343a40 ;  /* Темно-серый фон для всех строк */
+}
+
+#result_list tbody tr:hover {
+    background: #e9ecef !important;  /* Светло-серый цвет при наведении */
+    color: #343a40 !important;  /* Темно-серый текст */
+    transform: none;  /* Убираем масштабирование */
+}
+
+#result_list tbody tr:nth-child(even) {
+    background: #495057;  /* Четные строки - чуть светлее темно-серого */
+}
+
+#result_list tbody tr:nth-child(even):hover {
+    background: #e9ecef !important;  /* Светло-серый при наведении на четные строки */
+    color: #343a40 !important;  /* Темно-серый текст */
+}
+
+#result_list td, #result_list th {
+    padding: 12px 15px;
+    border: none;
+}
+
+/* Стили для ссылок в строках таблицы при наведении */
+#result_list tbody tr:hover td a {
+    color: #495057 !important;
+    text-decoration: none;
+}
+
+#result_list tbody tr:hover td {
+    color: #343a40 !important;
+}
+
+/* Улучшенные формы */
+input[type="text"], input[type="password"], input[type="email"],
+textarea, select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus,
+input[type="email"]:focus, textarea:focus, select:focus {
+    border-color: var(--university-primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Улучшенные кнопки */
+.button, input[type="submit"], input[type="button"] {
+    border-radius: 10px;
+    padding: 14px 28px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer; /* Убедимся, что курсор правильный */
+    z-index: 1; /* Поверх псевдоэлементов */
+}
+
+/* Специально для submit кнопок - убедимся что они работают */
+input[type="submit"] {
+    background-color: #3b82f6 !important;
+    border: none !important;
+    color: white !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+input[type="submit"]:hover {
+    background-color: #2563eb !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* Специальные стили для кнопок действий в форме */
+.submit-row input[type="submit"] {
+    margin-right: 10px !important;
+    pointer-events: auto !important;
+    z-index: 100 !important;
+}
+
+/* Убедимся что форма работает правильно */
+form {
+    pointer-events: auto !important;
+}
+
+form input, form select, form textarea {
+    pointer-events: auto !important;
+}
+
+/* Убираем все потенциально блокирующие стили с кнопок */
+.submit-row {
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+.button::before, input[type="submit"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+    pointer-events: none; /* Важно: не блокировать клики */
+}
+
+.button:hover::before, input[type="submit"]:hover::before {
+    left: 100%;
+}
+
+/* Улучшенные сообщения */
+.messagelist li {
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 12px 0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.5s ease;
+}
+
+.messagelist li::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.messagelist .success::before { content: '\f058'; }
+.messagelist .info::before { content: '\f05a'; }
+.messagelist .warning::before { content: '\f071'; }
+.messagelist .error::before { content: '\f06a'; }
+
+/* Улучшенный футер */
+#footer {
+    background: var(--bg-secondary);
+    border-top: 2px solid var(--border-color);
+    padding: 25px;
+    margin-top: 50px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.copyright {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.version {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+    justify-self: end;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--university-primary);
+}
+
+/* Адаптивность */
+@media (max-width: 1024px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .footer-links {
+        justify-self: center;
+    }
+}
+
+@media (max-width: 768px) {
+    #header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 0;
+    }
+    
+    #branding {
+        text-align: center;
+        padding: 10px;
+    }
+    
+    .nav-global {
+        justify-content: center;
+        padding: 10px;
+    }
+    
+    .module {
+        margin: 15px 0;
+    }
+}
+
+/* Специальные классы для университета */
+.university-badge {
+    background: linear-gradient(135deg, var(--university-primary) 0%, var(--university-secondary) 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Анимации для взаимодействия */
+.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+}
+
+.clickable:active {
+    transform: scale(0.95);
+}
+
+/* Улучшенный скроллбар */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--university-primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--university-secondary);
+}
+
+/* Утилитарные классы */
+.text-university {
+    color: var(--university-primary) !important;
+}
+
+.bg-university {
+    background: linear-gradient(135deg, var(--university-primary) 0%, var(--university-secondary) 100%) !important;
+}
+
+.border-university {
+    border-color: var(--university-primary) !important;
+}
+
+/* Состояния загрузки */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f4f6;
+    border-top: 2px solid var(--university-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}

@@ -1,42 +1,84 @@
 from django.contrib import admin
+from django.utils.html import format_html
+from core_admin import BaseModelAdmin, TranslationAdminMixin, image_preview, format_date_field
 from .models import ResearchArea, ResearchCenter, Grant, Conference, Publication, GrantApplication
 
 
 @admin.register(ResearchArea)
-class ResearchAreaAdmin(admin.ModelAdmin):
-    list_display = ['title_ru', 'projects_count', 'publications_count', 'researchers_count', 'is_active']
-    list_filter = ['is_active', 'created_at']
+class ResearchAreaAdmin(BaseModelAdmin, TranslationAdminMixin):
+    list_display = [
+        'title_ru', 'icon_preview', 'color_preview', 'statistics_preview', 'colored_status'
+    ]
+    list_filter = ['is_active', 'created_at', 'color']
     search_fields = ['title_ru', 'title_en', 'title_kg']
-    list_editable = ['projects_count', 'publications_count', 'researchers_count', 'is_active']
     ordering = ['title_ru']
+    list_per_page = 15
+    readonly_fields = ['icon_preview', 'color_preview', 'statistics_preview']
     
     fieldsets = (
-        ('Основная информация', {
+        ('🎯 Основная информация', {
             'fields': ('title_ru', 'title_en', 'title_kg', 'icon', 'color')
         }),
-        ('Описание', {
-            'fields': ('description_ru', 'description_en', 'description_kg')
+        ('📝 Описание', {
+            'fields': ('description_ru', 'description_en', 'description_kg'),
+            'classes': ['collapse']
         }),
-        ('Статистика', {
-            'fields': ('projects_count', 'publications_count', 'researchers_count')
+        ('📊 Статистика', {
+            'fields': (
+                ('projects_count', 'publications_count'), 
+                'researchers_count'
+            )
         }),
-        ('Настройки', {
+        ('⚙️ Настройки', {
             'fields': ('is_active',)
         }),
     )
+    
+    def icon_preview(self, obj):
+        if obj.icon:
+            return format_html(
+                '<span style="font-size: 24px; padding: 8px; background: {}; '
+                'border-radius: 8px; display: inline-block; min-width: 40px; '
+                'text-align: center; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">{}</span>',
+                obj.color or '#3b82f6', obj.icon
+            )
+        return '❓'
+    icon_preview.short_description = '🎨 Иконка'
+    
+    def color_preview(self, obj):
+        return format_html(
+            '<div style="width: 30px; height: 30px; background-color: {}; '
+            'border-radius: 50%; border: 2px solid #e5e7eb; display: inline-block; '
+            'box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>',
+            obj.color or '#3b82f6'
+        )
+    color_preview.short_description = '🎨 Цвет'
+    
+    def statistics_preview(self, obj):
+        return format_html(
+            '<div style="font-size: 12px; line-height: 1.4;">'
+            '📊 <strong>{}</strong> проектов<br>'
+            '📚 <strong>{}</strong> публикаций<br>'
+            '👥 <strong>{}</strong> исследователей'
+            '</div>',
+            obj.projects_count or 0,
+            obj.publications_count or 0,
+            obj.researchers_count or 0
+        )
+    statistics_preview.short_description = '📊 Статистика'
 
 
 @admin.register(ResearchCenter)
 class ResearchCenterAdmin(admin.ModelAdmin):
-    list_display = ['name_ru', 'director', 'staff_count', 'established_year', 'is_active']
+    list_display = ['name_ru', 'director_ru', 'staff_count', 'established_year', 'is_active']
     list_filter = ['is_active', 'established_year']
-    search_fields = ['name_ru', 'name_en', 'name_kg', 'director']
+    search_fields = ['name_ru', 'name_en', 'name_kg', 'director_ru', 'director_en', 'director_kg']
     list_editable = ['staff_count', 'is_active']
     ordering = ['name_ru']
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('name_ru', 'name_en', 'name_kg', 'director', 'established_year', 'staff_count')
+            'fields': ('name_ru', 'name_en', 'name_kg', 'director_ru', 'director_en', 'director_kg', 'established_year', 'staff_count')
         }),
         ('Описание', {
             'fields': ('description_ru', 'description_en', 'description_kg')
@@ -58,16 +100,16 @@ class ResearchCenterAdmin(admin.ModelAdmin):
 
 @admin.register(Grant)
 class GrantAdmin(admin.ModelAdmin):
-    list_display = ['title_ru', 'organization', 'amount', 'deadline', 'category', 'status']
+    list_display = ['title_ru', 'organization_ru', 'amount', 'deadline', 'category', 'status']
     list_filter = ['category', 'status', 'is_active', 'created_at']
-    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization']
+    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization_ru', 'organization_en', 'organization_kg']
     list_editable = ['status']
     date_hierarchy = 'deadline'
     ordering = ['-created_at']
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title_ru', 'title_en', 'title_kg', 'organization', 'amount')
+            'fields': ('title_ru', 'title_en', 'title_kg', 'organization_ru', 'organization_en', 'organization_kg', 'amount')
         }),
         ('Сроки', {
             'fields': ('deadline', 'duration_ru', 'duration_en', 'duration_kg')
@@ -133,9 +175,9 @@ class ConferenceAdmin(admin.ModelAdmin):
 
 @admin.register(Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ['title_ru', 'authors', 'journal', 'publication_date', 'publication_type', 'impact_factor', 'citations_count', 'is_featured']
+    list_display = ['title_ru', 'authors_ru', 'journal', 'publication_date', 'publication_type', 'impact_factor', 'citations_count', 'is_featured']
     list_filter = ['publication_type', 'publication_date', 'is_featured', 'is_active', 'research_area']
-    search_fields = ['title_ru', 'title_en', 'title_kg', 'authors', 'journal']
+    search_fields = ['title_ru', 'title_en', 'title_kg', 'authors_ru', 'authors_en', 'authors_kg', 'journal']
     list_editable = ['is_featured', 'citations_count']
     date_hierarchy = 'publication_date'
     ordering = ['-publication_date']
@@ -143,7 +185,7 @@ class PublicationAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Основная информация', {
-            'fields': ('title_ru', 'title_en', 'title_kg', 'authors', 'publication_type')
+            'fields': ('title_ru', 'title_en', 'title_kg', 'authors_ru', 'authors_en', 'authors_kg', 'publication_type')
         }),
         ('Публикация', {
             'fields': ('journal', 'publication_date', 'doi', 'url')

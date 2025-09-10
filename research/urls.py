@@ -50,7 +50,7 @@ GET /research/api/grants/deadline_soon/ - гранты с близким дед�
 Параметры фильтрации для грантов:
 - category: youth, international, fundamental, applied, innovative, clinical
 - status: active, upcoming, closed
-- organization: название организации
+- organization_ru, organization_en, organization_kg: название организации на соответствующем языке
 - search: поиск по названию, описанию, организации
 
 КОНФЕРЕНЦИИ:

@@ -23,7 +23,8 @@ class ResearchCenterSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name_ru', 'name_en', 'name_kg',
             'description_ru', 'description_en', 'description_kg',
-            'director', 'staff_count', 'established_year',
+            'director_ru', 'director_en', 'director_kg', 
+            'staff_count', 'established_year',
             'equipment_ru', 'equipment_en', 'equipment_kg',
             'image', 'website', 'email', 'phone', 'is_active'
         ]
@@ -37,7 +38,8 @@ class GrantListSerializer(serializers.ModelSerializer):
         model = Grant
         fields = [
             'id', 'title_ru', 'title_en', 'title_kg',
-            'organization', 'amount', 'deadline', 'category', 'status',
+            'organization_ru', 'organization_en', 'organization_kg', 
+            'amount', 'deadline', 'category', 'status',
             'duration_ru', 'duration_en', 'duration_kg',
             'is_deadline_soon'
         ]
@@ -51,7 +53,8 @@ class GrantDetailSerializer(serializers.ModelSerializer):
         model = Grant
         fields = [
             'id', 'title_ru', 'title_en', 'title_kg',
-            'organization', 'amount', 'deadline', 'category', 'status',
+            'organization_ru', 'organization_en', 'organization_kg', 
+            'amount', 'deadline', 'category', 'status',
             'duration_ru', 'duration_en', 'duration_kg',
             'requirements_ru', 'requirements_en', 'requirements_kg',
             'description_ru', 'description_en', 'description_kg',
@@ -86,7 +89,8 @@ class PublicationListSerializer(serializers.ModelSerializer):
         model = Publication
         fields = [
             'id', 'title_ru', 'title_en', 'title_kg',
-            'authors', 'journal', 'publication_date', 'publication_type',
+            'authors_ru', 'authors_en', 'authors_kg', 
+            'journal', 'publication_date', 'publication_type',
             'impact_factor', 'citations_count', 'doi', 'url',
             'research_area_name', 'research_center_name', 'is_featured'
         ]
@@ -101,7 +105,8 @@ class PublicationDetailSerializer(serializers.ModelSerializer):
         model = Publication
         fields = [
             'id', 'title_ru', 'title_en', 'title_kg',
-            'authors', 'journal', 'publication_date', 'publication_type',
+            'authors_ru', 'authors_en', 'authors_kg', 
+            'journal', 'publication_date', 'publication_type',
             'impact_factor', 'citations_count', 'doi', 'url',
             'abstract_ru', 'abstract_en', 'abstract_kg',
             'keywords_ru', 'keywords_en', 'keywords_kg',

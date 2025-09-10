@@ -45,8 +45,8 @@ class GrantViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Grant.objects.filter(is_active=True)
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category', 'status', 'organization']
-    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization', 'description_ru']
+    filterset_fields = ['category', 'status', 'organization_ru', 'organization_en', 'organization_kg']
+    search_fields = ['title_ru', 'title_en', 'title_kg', 'organization_ru', 'organization_en', 'organization_kg', 'description_ru']
     ordering_fields = ['deadline', 'amount', 'created_at']
     ordering = ['-created_at']
     
